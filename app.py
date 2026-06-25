@@ -47,19 +47,31 @@ CSS = f"""
     }}
     [data-testid="stSidebar"] [data-testid="stImage"] img {{ pointer-events: none !important; }}
     
-    /* ── FORZAR VISIBILIDAD DE TEXTOS DE ENTRADA (INPUT LABELS) EN EL CUERPO ── */
+    /* ── FORZAR VISIBILIDAD DE ETIQUETAS (LABELS) EN EL CUERPO ── */
     .stSelectbox label, .stTextInput label, .stMultiSelect label, .stSlider label, div[data-testid="stWidgetLabel"] p {{
         color: {NEGRO_TEXT} !important;
         font-weight: 700 !important;
         opacity: 1 !important;
     }}
     
-    /* Forzar que las cajas de texto ingresadas muestren texto legible */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] {{
+    /* ── CORRECCIÓN INMEDIATA: CAJAS DE TEXTO Y SELECCIÓN EN EL CUERPO (LEGBILIDAD TOTAL) ── */
+    div[data-testid="stAppViewContent"] div[data-baseweb="select"] > div,
+    div[data-testid="stAppViewContent"] .stTextInput input {{
+        background-color: {GRIS_CLAR} !important;
         color: {NEGRO_PURO} !important;
+        border: 1px solid {GRIS_MED} !important;
+    }}
+    /* Asegurar el color del texto escrito dentro de los selectboxes del cuerpo */
+    div[data-testid="stAppViewContent"] div[data-baseweb="select"] [data-testid="stMarkdownContainer"] p {{
+        color: {NEGRO_PURO} !important;
+        font-weight: 500 !important;
+    }}
+    /* Color de las flechitas de selección en el cuerpo */
+    div[data-testid="stAppViewContent"] div[data-baseweb="select"] svg {{ 
+        fill: {NEGRO_PURO} !important; 
     }}
 
-    /* ── FORZAR COLOR EN LAS ETIQUETAS DEL SIDEBAR (MANTENER BLANCAS) ── */
+    /* ── MANTENER CAJAS DEL SIDEBAR COMO ESTABAN (CONTRASTE OSCURO) ── */
     [data-testid="stSidebar"] .stSelectbox label,
     [data-testid="stSidebar"] .stMultiSelect label,
     [data-testid="stSidebar"] .stSlider label,
@@ -67,21 +79,6 @@ CSS = f"""
     [data-testid="stSidebar"] div[data-testid="stWidgetLabel"] p {{
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
-    
-    /* ── CORRECCIÓN CRÍTICA: RECUADROS DE ALERTAS (WARNING/ST.ALERT) ── */
-    div[data-testid="stAlert"] p, div[data-testid="stNotification"] p, .stAlert div {{
-        color: #664d03 !important; /* Marrón/ocre oscuro para alertas amarillas */
-        font-weight: 600 !important;
-    }}
-    
-    /* ── COMPONENTES DE MÉTRICAS (ST.METRIC) ── */
-    div[data-testid="stMetricValue"] div {{
-        color: {NEGRO_PURO} !important; font-weight: 800 !important;
-    }}
-    div[data-testid="stMetricLabel"] p, div[data-testid="stMetricLabel"] label {{
-        color: {NEGRO_TEXT} !important; font-weight: 700 !important;
-    }}
-    
     [data-testid="stSidebar"] div[data-baseweb="select"] > div {{
         background-color: {NEGRO_CAJAS} !important;
         color: {BLANCO_CAJAS_TEXTO} !important;
@@ -104,6 +101,20 @@ CSS = f"""
     }}
     [data-testid="stSidebar"] div[data-testid="stSlider"] span {{
         color: {BLANCO} !important; font-weight: 700 !important;
+    }}
+    
+    /* ── RECUADROS DE ALERTAS (WARNING/ST.ALERT) ── */
+    div[data-testid="stAlert"] p, div[data-testid="stNotification"] p, .stAlert div {{
+        color: #664d03 !important;
+        font-weight: 600 !important;
+    }}
+    
+    /* ── COMPONENTES DE MÉTRICAS (ST.METRIC) ── */
+    div[data-testid="stMetricValue"] div {{
+        color: {NEGRO_PURO} !important; font-weight: 800 !important;
+    }}
+    div[data-testid="stMetricLabel"] p, div[data-testid="stMetricLabel"] label {{
+        color: {NEGRO_TEXT} !important; font-weight: 700 !important;
     }}
     
     /* ── MINI BARRA DE HERRAMIENTAS COMPACTA Y OSCURA ── */
