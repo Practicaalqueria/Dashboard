@@ -72,10 +72,10 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── MINI BARRA DE HERRAMIENTAS ORIGINAL COMPACTA Y OSCURA (SIN CUADRADOS) ── */
+    /* ── MINI BARRA DE HERRAMIENTAS ORIGINAL COMPACTA Y OSCURA (LIMPIEZA TOTAL) ── */
     [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     
-    /* Cápsula contenedora compacta perfectamente alineada a la derecha de la tabla */
+    /* Cápsula contenedora principal */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
         top: -44px !important;              
@@ -96,33 +96,32 @@ CSS = f"""
         width: auto !important;
     }}
     
-    /* ELIMINACIÓN DE LOS MARCOS BLANCO-GRISÁCEOS INTERNOS DE BASEWEB */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] *,
+    /* Forzar transparencia absoluta en los botones internos y eliminar bordes fantasmas */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] span,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button * {{
-        background-color: #1e2530 !important; /* Forzamos a heredar el mismo color exacto de la cápsula */
-        background: #1e2530 !important;
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] span {{
+        background-color: transparent !important;
+        background: transparent !important;
         border: none !important;
         border-color: transparent !important;
-        border-radius: 0px !important;
         outline: none !important;
         box-shadow: none !important;
         -webkit-box-shadow: none !important;
     }}
     
-    /* Asegurar que al pasar el mouse u oprimir no se generen los recuadros nativos */
+    /* Eliminar cualquier efecto de recuadro al pasar el mouse u oprimir */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:hover,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:focus,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:active {{
-        background-color: #1e2530 !important;
-        background: #1e2530 !important;
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:active,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"]:hover {{
+        background: transparent !important;
+        background-color: transparent !important;
         border: none !important;
         box-shadow: none !important;
     }}
     
-    /* Forzar tamaño mini idéntico de los 4 botones contenedores individuales */
+    /* Mantener las dimensiones exactas y compactas de los botones */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] {{
         min-width: 24px !important;         
         max-width: 24px !important;
@@ -135,16 +134,18 @@ CSS = f"""
         margin: 0 !important;
     }}
     
-    /* Forzar los 4 iconos estrictamente a blanco puro y transparente */
+    /* Forzar los 4 iconos estrictamente a blanco puro sin heredar fondos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg * {{
         transform: scale(0.82) !important;
         fill: #FFFFFF !important;           
         color: #FFFFFF !important;
         stroke: #FFFFFF !important;
+        background-color: transparent !important;
+        background: transparent !important;
     }}
 
-    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (RESTAURADO E INTACTO) ── */
+    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (MANTENIDO) ── */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
         gap: 12px !important;
         border-bottom: none !important;
