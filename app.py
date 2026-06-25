@@ -72,18 +72,68 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* MODIFICADO: Barra de herramientas limpia sin forma de botón */
+    /* ── BARRA DE HERRAMIENTAS DEL DATAFRAME (Limpia sin forma de botón) ── */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
-        position: absolute !important; top: -38px !important; right: 5px !important;
-        background-color: transparent !important; border: none !important;
-        box-shadow: none !important; padding: 0 !important;
-        z-index: 99 !important; opacity: 1 !important; visibility: visible !important; display: flex !important;
+        position: absolute !important; 
+        top: -38px !important; 
+        right: 5px !important;
+        background-color: transparent !important; 
+        border: none !important;
+        box-shadow: none !important; 
+        padding: 0 !important;
+        z-index: 99 !important; 
+        opacity: 1 !important; 
+        visibility: visible !important; 
+        display: flex !important;
     }}
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button {{
-        background-color: transparent !important; border: none !important;
+        background-color: transparent !important; 
+        border: none !important;
+    }}
+    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 45px !important; }}
+    
+    /* ── DISEÑO DE PESTAÑAS COMO BOTONES ── */
+    /* Separación entre cada botón y eliminación de la línea del fondo */
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] {{
+        gap: 12px !important;
+        border-bottom: none !important;
+    }}
+    /* Ocultar el indicador de línea inferior nativo */
+    div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {{
+        background-color: transparent !important;
+    }}
+    /* Estilo base para botones inactivos */
+    div[data-testid="stTabs"] button {{
+        background-color: {GRIS_MED} !important;
+        border: 1px solid {GRIS_MED} !important;
+        border-radius: 6px !important;
+        padding: 8px 16px !important;
+        height: auto !important;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    }}
+    /* Hover para los botones */
+    div[data-testid="stTabs"] button:hover {{
+        background-color: #DFDFDF !important;
+        border-color: #DFDFDF !important;
+    }}
+    /* Botón seleccionado / Activo */
+    div[data-testid="stTabs"] button[aria-selected="true"] {{
+        background-color: {ROJO} !important;
+        border: 1px solid {ROJO} !important;
+    }}
+    /* Texto de los botones inactivos */
+    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{ 
+        color: {NEGRO_TEXT} !important; 
+        font-weight: 700 !important;
+    }}
+    /* Texto del botón activo (Blanco para contraste) */
+    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
+        color: {BLANCO} !important; 
+        font-weight: 700 !important;
     }}
     
-    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 45px !important; }}
+    /* ── OTROS ELEMENTOS DE INTERFAZ ── */
     .header-bar-container {{
         background: {ROJO}; padding: 15px 25px;
         border-radius: 8px; margin-bottom: 22px;
@@ -113,8 +163,6 @@ CSS = f"""
         background-color: {ROJO} !important; color: {BLANCO} !important;
         border: none; border-radius: 6px; font-weight: 700;
     }}
-    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{ color: {NEGRO_TEXT} !important; }}
-    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ color: {ROJO} !important; }}
     h2, h3, h4 {{ color: {NEGRO_PURO} !important; font-weight: 700 !important; }}
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] caption {{ color: {BLANCO} !important; }}
     [data-testid="stSidebar"] .streamlit-expanderHeader {{
