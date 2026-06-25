@@ -107,8 +107,43 @@ CSS = f"""
         background-color: {ROJO} !important; color: {BLANCO} !important;
         border: none; border-radius: 6px; font-weight: 700;
     }}
-    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{ color: {NEGRO_TEXT} !important; }}
-    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ color: {ROJO} !important; }}
+    /* Tabs con estilo de botón */
+    div[data-testid="stTabs"] {{
+        gap: 8px !important;
+    }}
+    div[data-testid="stTabs"] button {{
+        background-color: {GRIS_MED} !important;
+        border: 2px solid {GRIS_MED} !important;
+        border-radius: 8px !important;
+        padding: 8px 18px !important;
+        font-weight: 700 !important;
+        transition: all 0.2s ease !important;
+    }}
+    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{
+        color: {NEGRO_TEXT} !important;
+        font-weight: 700 !important;
+    }}
+    div[data-testid="stTabs"] button[aria-selected="true"] {{
+        background-color: {ROJO} !important;
+        border: 2px solid {ROJO} !important;
+        border-radius: 8px !important;
+    }}
+    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{
+        color: {BLANCO} !important;
+        font-weight: 700 !important;
+    }}
+    div[data-testid="stTabs"] button:hover {{
+        background-color: {ROJO_OSC} !important;
+        border-color: {ROJO_OSC} !important;
+    }}
+    div[data-testid="stTabs"] button:hover [data-testid="stMarkdownContainer"] p {{
+        color: {BLANCO} !important;
+    }}
+    /* Ocultar la línea inferior de tabs por defecto */
+    div[data-testid="stTabs"] > div:first-child {{
+        border-bottom: none !important;
+        gap: 8px !important;
+    }}
     h2, h3, h4 {{ color: {NEGRO_PURO} !important; font-weight: 700 !important; }}
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] caption {{ color: {BLANCO} !important; }}
     [data-testid="stSidebar"] .streamlit-expanderHeader {{
@@ -287,8 +322,10 @@ areas = ["Todas"] + sorted([a for a in df_raw["CIA"].unique() if a != ""]) if "C
 area_sel = st.sidebar.selectbox("Compañía (CIA)", areas)
 
 p_min = 0
-p_max = int(df_raw["PRECIO NEGOCIADOR"].max()) if "PRECIO NEGOCIADOR" in df_raw.columns and df_raw["PRECIO NEGOCIADOR"].max() > 0 else 150000000
-valores_escala = list(range(p_min, p_max + 500000, 500000))
+_precios_validos = df_raw["PRECIO REAL NUM"] if "PRECIO REAL NUM" in df_raw.columns else pd.Series([0])
+p_max = int(_precios_validos.max()) if _precios_validos.max() > 0 else 150000000
+_paso = max(500000, (p_max // 200) // 500000 * 500000)
+valores_escala = list(range(p_min, p_max + _paso, _paso))
 if p_max not in valores_escala:
     valores_escala.append(p_max)
 
@@ -315,8 +352,8 @@ if ciudad_sel != "Todas" and "Ciudad" in df.columns:
     df = df[df["Ciudad"] == ciudad_sel]
 if area_sel != "Todas" and "CIA" in df.columns:
     df = df[df["CIA"] == area_sel]
-if "PRECIO NEGOCIADOR" in df.columns:
-    df = df[(df["PRECIO NEGOCIADOR"] >= rango_precio_fmt[0]) & (df["PRECIO NEGOCIADOR"] <= rango_precio_fmt[1])]
+if "PRECIO REAL NUM" in df.columns:
+    df = df[(df["PRECIO REAL NUM"] >= rango_precio_fmt[0]) & (df["PRECIO REAL NUM"] <= rango_precio_fmt[1])]
 if estado_sel:
     df = df[df["SEMAFORO"].isin(estado_sel)]
 if contrato_sel != "Todos":
