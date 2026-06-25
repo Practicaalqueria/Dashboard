@@ -72,18 +72,18 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME (Pequeña y Alejada de la Tabla) ── */
+    /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME (Alineada y Homogénea) ── */
     [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     
-    /* Contenedor principal estilo cápsula pequeña */
+    /* Contenedor principal alineado exactamente al borde derecho de la tabla */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
-        top: -46px !important;              /* Subido para evitar que pise el borde negro de la tabla */
-        right: 2px !important;
-        background-color: #F0F2F6 !important; /* Fondo gris claro limpio */
+        top: -46px !important;              
+        right: 0px !important;             /* Alineado al ras con el límite lateral de los datos */
+        background-color: #F0F2F6 !important; 
         border: 1px solid #E6E9EF !important;
-        border-radius: 30px !important;       /* Bordes perfectamente redondos estilo cápsula */
-        padding: 2px 8px !important;         /* Compactado al mínimo */
+        border-radius: 30px !important;       
+        padding: 2px 8px !important;         
         z-index: 99 !important; 
         opacity: 1 !important; 
         visibility: visible !important; 
@@ -95,14 +95,17 @@ CSS = f"""
         width: auto !important;
     }}
     
-    /* Forzar botones internos circulares, ultra compactos e independientes */
+    /* Quitar burbujas secundarias y homogeneizar todos los botones internos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[data-testid="stElementToolbarButton"] {{
         background-color: transparent !important;
+        background: transparent !important;
         border: none !important;
+        outline: none !important;
         border-radius: 50% !important;
         box-shadow: none !important;
-        min-width: 24px !important;         /* Dimensiones fijas pequeñas */
+        min-width: 24px !important;         
         max-width: 24px !important;
         height: 24px !important;
         padding: 0 !important;
@@ -112,10 +115,10 @@ CSS = f"""
         justify-content: center !important;
     }}
     
-    /* Reducción sutil de los iconos internos para un look estético */
+    /* Normalizar iconos internos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
         transform: scale(0.82) !important;
-        fill: #555555 !important;           /* Gris oscuro suave */
+        fill: #555555 !important;           
         color: #555555 !important;
     }}
 
@@ -127,7 +130,6 @@ CSS = f"""
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {{
         background-color: transparent !important;
     }}
-    /* Afecta únicamente los elementos de control de las pestañas superiores principales */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {{
         background-color: {GRIS_MED} !important;
         border: 1px solid {GRIS_MED} !important;
