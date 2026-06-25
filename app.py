@@ -4,6 +4,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import date
 from io import BytesIO
+import requests
+from geopy.geocoders import Nominatim
 
 # ── Configuración de página ────────────────────────────────────────────────────
 st.set_page_config(
@@ -665,8 +667,8 @@ with tab5:
     st.markdown("Selecciona un inmueble para geolocalizar su zona y buscar precios de referencia mediante Web Scraping.")
     
     if len(df_principales) > 0 and "Direccion completa" in df_principales.columns:
-        # Selector dinámico basado en los inmuebles filtrados
-        opciones_inmuebles = df_principales["ARTICULO"] + " - " + df_principales["Direccion completa"]
+        # ── SOLUCIÓN AL ERROR: Convertimos explícitamente ambas columnas a string (texto) ──
+        opciones_inmuebles = df_principales["ARTICULO"].astype(str) + " - " + df_principales["Direccion completa"].astype(str)
         inmueble_seleccionado = st.selectbox("Seleccionar Inmueble a Evaluar", opciones_inmuebles)
         
         # Extraer dirección y ciudad reales del renglón seleccionado
@@ -731,6 +733,8 @@ with tab5:
                     st.error("❌ Geopy no pudo identificar componentes válidos de dirección para este registro.")
     else:
         st.warning("No hay direcciones cargadas en el archivo actual de arriendos.")
+
+
 
 # ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
 st.markdown('<div class="footer-final">Herramienta desarrollada por Juan Camilo Garzón y Tomás Sandoval, estudiantes de la Universidad de La Sabana en periodo de Micro Prácticas</div>', unsafe_allow_html=True)
