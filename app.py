@@ -691,10 +691,11 @@ with tab4:
             file_name="arriendos_filtrado.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-# TAB 5 - VERSIÓN DE RENDIMIENTO CON COORDENADAS Y CONTINGENCIA INTEGRADA
+
+# TAB 5 - MÓDULO EXCLUSIVO DE IDENTIFICACIÓN DE ZONA GEOFRENCIADA
 with tab5:
-    st.subheader("📊 Análisis Comparativo de Mercado (Precios por M²)")
-    st.markdown("Selecciona un inmueble para geolocalizar su zona y buscar precios de referencia mediante Web Scraping.")
+    st.subheader("📍 Identificación Geográfica de Zonas")
+    st.markdown("Selecciona un inmueble para geolocalizar y validar oficialmente su barrio o sector según los mapas de OpenStreetMap.")
     
     if len(df_principales) > 0 and "Direccion completa" in df_principales.columns:
         # Selector dinámico basado en los inmuebles filtrados con conversión explícita a string
@@ -712,93 +713,42 @@ with tab5:
         with c2:
             ciudad_input = st.text_input("Ciudad/Municipio:", value=ciudad_cruda)
             
-        if st.button("🚀 Ejecutar Análisis de Mercado"):
+        if st.button("🚀 Identificar Zona"):
             barrio = "Zona General"
-            lat_val = None
-            lon_val = None
             hubo_error_geo = False
             
-            with st.spinner("1. Localizando coordenadas con Geopy..."):
-                # Se asigna un agente corporativo único y se extiende el timeout a 10 segundos
-                geolocator = Nominatim(user_agent="alqueria_financial_benchmarking_sabana_2026_v3", timeout=10)
+            with st.spinner("Buscando sector en el servidor de mapas..."):
+                # Asignación de agente único y timeout de seguridad de 10 segundos
+                geolocator = Nominatim(user_agent="alqueria_financial_zone_identifier_2026", timeout=10)
                 query_busqueda = f"{direccion_input}, {ciudad_input}, Colombia"
                 
                 try:
                     location = geolocator.geocode(query_busqueda, addressdetails=True)
                     if location and 'address' in location.raw:
                         address_details = location.raw['address']
+                        # Extraer el componente de barrio/comuna más específico disponible
                         barrio = address_details.get('suburb') or address_details.get('neighbourhood') or address_details.get('quarter') or "Zona General"
-                        lat_val = location.latitude
-                        lon_val = location.longitude
-                        
-                        st.success(f"📍 Ubicación encontrada: {location.address}")
+                        st.success(f"📍 Dirección normalizada: {location.address}")
                     else:
                         hubo_error_geo = True
                 except Exception:
                     hubo_error_geo = True
             
-            # ── MANEJO VISUAL DE COORDENADAS (REALES O ESTIMADAS) ──
-            st.markdown("#### 🌐 Coordenadas Geográficas de Análisis")
-            coord1, coord2 = st.columns(2)
+            # ── DESPLIEGUE EXCLUSIVO DE RESULTADOS DE ZONIFICACIÓN ──
+            st.markdown("#### 🏘️ Resultado del Análisis de Ubicación")
             
-            if not hubo_error_geo and lat_val and lon_val:
-                with coord1:
-                    st.metric(label="Compass Latitud (Real)", value=f"{lat_val:.6f}")
-                with coord2:
-                    st.metric(label="Map Longitud (Real)", value=f"{lon_val:.6f}")
-                st.info(f"🏘️ Zona/Barrio detectado por mapa: **{barrio}**")
+            if not hubo_error_geo and barrio != "Zona General":
+                st.metric(label="Zona / Barrio Oficial Detectado", value=f"{barrio}")
+                st.caption(f"Validación territorial completada con éxito para {ciudad_input}.")
             else:
-                # Si falla el servicio, se estiman coordenadas relativas de contingencia para no bloquear la app
-                st.warning("⚠️ El servicio de OpenStreetMap no respondió a tiempo. Se calculará una estimación utilizando coordenadas base regionales.")
-                barrio = "Zona de Contingencia"
+                # Caso de contingencia si el mapa está saturado o no encuentra el barrio exacto
+                st.warning("⚠️ El servidor de mapas no pudo mapear el barrio específico en este momento o la dirección requiere mayor detalle.")
+                st.metric(label="Zona Asignada (Contingencia)", value=f"{ciudad_input} - Sector General")
+                st.caption("Se tomó la ciudad/municipio base como sector de referencia para el contrato.")
                 
-                # Coordenadas base simuladas según el input para que visualmente se mantenga la estructura
-                if "ibague" in ciudad_input.lower():
-                    lat_val, lon_val = 4.438889, -75.232222
-                else:
-                    lat_val, lon_val = 4.609710, -74.081750  # Bogotá base
-                    
-                with coord1:
-                    st.metric(label="Compass Latitud (Estimada)", value=f"{lat_val:.6f}")
-                with coord2:
-                    st.metric(label="Map Longitud (Estimada)", value=f"{lon_val:.6f}")
-            
-            # ── PROCESAMIENTO DEL MODELO DE PRECIOS POR M² ──
-            with st.spinner(f"2. Extrayendo precios de referencia..."):
-                url_scraping = f"https://www.propiedades-ejemplo.com/arriendo/{ciudad_input.lower()}/{barrio.lower()}?orden=baratos"
-                headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
-                
-                try:
-                    res = requests.get(url_scraping, headers=headers, timeout=5)
-                    if res.status_code == 200:
-                        precios_m2_detectados = [45000, 48000, 52000, 39000, 41000]
-                    else:
-                        raise Exception("Portal no disponible")
-                except Exception:
-                    # Lógica inteligente de contingencia según la zona e inputs
-                    if "ibague" in ciudad_input.lower():
-                        if "jordán" in barrio.lower() or "comuna 5" in barrio.lower():
-                            precios_m2_detectados = [22000, 25000, 28000, 24000, 26000]
-                        else:
-                            precios_m2_detectados = [19000, 21000, 23000, 20000]
-                    elif "bogota" in ciudad_input.lower() or "bogotá" in ciudad_input.lower():
-                        precios_m2_detectados = [38000, 42000, 45000, 39000]
-                    else:
-                        precios_m2_detectados = [25000, 28000, 30000, 27000]
-
-                # Despliegue final de resultados de benchmarking financiero
-                promedio_m2 = sum(precios_m2_detectados) / len(precios_m2_detectados)
-                
-                st.markdown("### 📈 Resultados del Benchmarking (Modelado de Datos)")
-                m1, m2 = st.columns(2)
-                with m1:
-                    st.metric(label="Precio Promedio de Referencia por M²", value=f"${promedio_m2:,.0f} COP")
-                with m2:
-                    st.metric(label="Zona/Filtro Aplicado", value=f"{ciudad_input} - {barrio}")
-                    
-                st.caption("Consulta de optimización financiera procesada correctamente.")
     else:
         st.warning("No hay direcciones cargadas en el archivo actual de arriendos.")
+
 
 # ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
 st.markdown('<div class="footer-final">Herramienta desarrollada por Juan Camilo Garzón y Tomás Sandoval, estudiantes de la Universidad de La Sabana en periodo de Micro Prácticas</div>', unsafe_allow_html=True)
