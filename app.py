@@ -30,155 +30,142 @@ NEGRO_CAJAS = "#000000"
 BLANCO_CAJAS_TEXTO = "#FFFFFF"
 LOGOTIPO_SIDEBAR = "alqueria_logo.png"
 
-CSS = f"""
+CSS = """
 <style>
     /* ── CONFIGURACIÓN GLOBAL DE LA APP ── */
-    .stApp {{ 
-        background-color: {BLANCO} !important; 
-        color: {NEGRO_TEXT} !important; 
-    }}
+    .stApp { 
+        background-color: #FFFFFF !important; 
+        color: #1A1A1A !important; 
+    }
     
     /* Barra lateral (Sidebar) */
-    [data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child {{ 
-        background-color: {ROJO} !important; 
-    }}
+    [data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child { 
+        background-color: #D32F2F !important; 
+    }
     
-    /* ── PROTECCIÓN ESTRICTA DE LOS KPIS / MÉTRICAS SUPERIORES ── */
-    [data-testid="stMetricValue"] {{ 
-        color: {NEGRO_TEXT} !important; 
-        font-weight: 800 !important; 
-    }}
-    [data-testid="stMetricLabel"] p {{ 
-        color: #555555 !important; 
-        font-weight: 600 !important; 
-    }}
+    /* ── RESTAURACIÓN ABSOLUTA DE LOS KPIS (TEXTO CLARO Y DIRECTO) ── */
+    div[data-testid="stMetricValue"] > div {
+        color: #1A1A1A !important;
+        font-weight: 800 !important;
+    }
+    div[data-testid="stMetricLabel"] p {
+        color: #555555 !important;
+        font-weight: 600 !important;
+    }
     
-    /* ── MINI BARRA DE HERRAMIENTAS DE DATAFRAME (LOS 4 ICONOS VISIBLES EN BLANCO) ── */
-    [data-testid="stDataFrame"] {{ 
+    /* ── MINI BARRA DE HERRAMIENTAS DE DATAFRAME (ICONOS NATIVOS PERFECTOS) ── */
+    [data-testid="stDataFrame"] { 
         position: relative !important; 
         margin-top: 42px !important; 
-    }}
+    }
     
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {
         position: absolute !important; 
         top: -44px !important;              
         right: 0px !important;             
         left: auto !important;
-        background-color: #1e2530 !important; 
-        border: 1px solid #2d3748 !important;
-        border-radius: 30px !important;       
-        padding: 2px 8px !important;         
+        background-color: #1E2530 !important; 
+        border: 1px solid #2D3748 !important;
+        border-radius: 20px !important;       
+        padding: 4px 8px !important;         
         z-index: 99 !important; 
         opacity: 1 !important; 
         visibility: visible !important; 
         display: flex !important;
         align-items: center !important;
-        gap: 6px !important;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
         height: 34px !important;
         width: auto !important;
-    }}
+    }
     
-    /* Limpieza de los botones de la barra */
+    /* Quitar fondos y dejar que el tamaño sea dinámico (corrige la distorsión) */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] {
         background: transparent !important;
         background-color: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 28px !important;
-        height: 28px !important;
-    }}
+        width: auto !important;
+        height: auto !important;
+        padding: 2px 6px !important;
+    }
 
-    /* Reset de comportamiento para el contenedor del SVG */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
-        color: #FFFFFF !important;
-        background: transparent !important;
-        background-color: transparent !important;
-    }}
-    
-    /* FIX DE LOS 4 ICONOS: Pintar las líneas de TODO tipo de figura geométrica en blanco */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg rect,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon {{
-        stroke: #FFFFFF !important;
-        stroke-width: 1.5 !important;
-        fill: none !important;
-    }}
-    
-    /* Permitir relleno blanco SOLO a las formas que se dibujan rellenas por defecto */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg [fill^="#"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg [fill^="rgb"] {{
-        fill: #FFFFFF !important;
-    }}
-    
-    /* Evitar explícitamente que los rectángulos invisibles de fondo bloqueen el icono */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button svg > rect:first-child {{
+    /* Forzar transparencia absoluta en los cuadrados contenedores invisibles del SVG */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg rect:first-child {
         fill: transparent !important;
         stroke: transparent !important;
-    }}
+        background: transparent !important;
+    }
+    
+    /* Pintar todas las líneas reales de las figuras en blanco sin alterar sus trazos */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polyline,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon {
+        stroke: #FFFFFF !important;
+    }
+    
+    /* Asegurar el relleno blanco únicamente para los iconos que lo requieran nativamente */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg [fill] {
+        fill: #FFFFFF !important;
+    }
 
     /* ── DISEÑO COHESIVO DE PESTAÑAS (STTABS AISLADAS) ── */
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {
         gap: 12px !important;
         border-bottom: none !important;
-    }}
+    }
     
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {{
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {
         background-color: transparent !important;
-    }}
+    }
     
     /* Estilo de pestaña inactiva */
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {{
-        background-color: {GRIS_MED} !important;
-        border: 1px solid {GRIS_MED} !important;
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {
+        background-color: #E0E0E0 !important;
+        border: 1px solid #E0E0E0 !important;
         border-radius: 6px !important;
         padding: 8px 16px !important;
         height: auto !important;
         transition: all 0.2s ease-in-out !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    }}
+    }
     
     /* Efecto Hover */
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"]:hover {{
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"]:hover {
         background-color: #DFDFDF !important;
         border-color: #DFDFDF !important;
-    }}
+    }
     
     /* Estilo de pestaña seleccionada activa */
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] {{
-        background-color: {ROJO} !important;
-        border: 1px solid {ROJO} !important;
-    }}
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] {
+        background-color: #D32F2F !important;
+        border: 1px solid #D32F2F !important;
+    }
     
     /* Textos internos de las pestañas */
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p {{ 
-        color: {NEGRO_TEXT} !important; 
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p { 
+        color: #1A1A1A !important; 
         font-weight: 700 !important;
-    }}
+    }
     
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
-        color: {BLANCO} !important; 
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p { 
+        color: #FFFFFF !important; 
         font-weight: 700 !important;
-    }}
+    }
 
     /* ── PIE DE PÁGINA (FOOTER) ── */
-    .footer-final {{
+    .footer-final {
         text-align: center;
         padding: 20px;
         font-size: 13px;
         color: #666666;
-        border-top: 1px solid {GRIS_MED};
+        border-top: 1px solid #E0E0E0;
         margin-top: 50px;
-    }}
+    }
 </style>
 """
-
 
 
 st.markdown(CSS, unsafe_allow_html=True)
