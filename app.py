@@ -692,119 +692,130 @@ with tab4:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-# TAB 5 - MÓDULO DE ZONIFICACIÓN CON API PÚBLICA Y GRATUITA (CON FILTRADO ANTI-BLOQUEO)
-with tab5:
-    st.subheader("📍 Identificación Geográfica de Zonas (API Gratuita)")
-    st.markdown("Selecciona un inmueble para consultar su barrio o sector oficial en tiempo real usando la API libre de OpenStreetMap.")
+CSS = f"""
+<style>
+    /* ── CONFIGURACIÓN GLOBAL DE LA APP ── */
+    .stApp {{ 
+        background-color: {BLANCO} !important; 
+        color: {NEGRO_TEXT} !important; 
+    }}
     
-    import requests
-    import re
-    import urllib.parse
+    /* Barra lateral (Sidebar) */
+    [data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child {{ 
+        background-color: {ROJO} !important; 
+    }}
+    
+    /* ── MINI BARRA DE HERRAMIENTAS DE DATAFRAME (SIN CUADRADOS BLANCOS) ── */
+    [data-testid="stDataFrame"] {{ 
+        position: relative !important; 
+        margin-top: 42px !important; 
+    }}
+    
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
+        position: absolute !important; 
+        top: -44px !important;              
+        right: 0px !important;             
+        left: auto !important;
+        background-color: #1e2530 !important; 
+        border: 1px solid #2d3748 !important;
+        border-radius: 30px !important;       
+        padding: 2px 6px !important;         
+        z-index: 99 !important; 
+        opacity: 1 !important; 
+        visibility: visible !important; 
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+        height: 32px !important;
+        width: auto !important;
+    }}
+    
+    /* Quitar fondos extraños de los contenedores de botones de la barra */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] {{
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 26px !important;
+        height: 26px !important;
+    }}
 
-    if len(df_principales) > 0 and "Direccion completa" in df_principales.columns:
-        # Selector dinámico basado en los inmuebles filtrados
-        opciones_inmuebles = df_principales["ARTICULO"].astype(str) + " - " + df_principales["Direccion completa"].astype(str)
-        inmueble_seleccionado = st.selectbox("Seleccionar Inmueble a Evaluar", opciones_inmuebles)
-        
-        # Extraer dirección y ciudad reales del renglón seleccionado
-        idx = opciones_inmuebles[opciones_inmuebles == inmueble_seleccionado].index[0]
-        direccion_cruda = df_principales.loc[idx, "Direccion completa"]
-        ciudad_cruda = df_principales.loc[idx, "Ciudad"]
-        
-        c1, c2 = st.columns(2)
-        with c1:
-            direccion_input = st.text_input("Dirección para buscar:", value=direccion_cruda)
-        with c2:
-            ciudad_input = st.text_input("Ciudad/Municipio:", value=ciudad_cruda)
-            
-        if st.button("🚀 Identificar Zona (API Gratis)"):
-            with st.spinner("Consultando base de datos geográfica pública..."):
-                
-                # ── LIMPIEZA DE NOMENCLATURA CRÍTICA ANTE LA API ──
-                # Las APIs gratuitas odian los símbolos de numeral (#) y caracteres especiales de oficina/piso
-                dir_limpia = direccion_input.lower()
-                dir_limpia = re.sub(r'#\s*', '', dir_limpia)  # Quitar el símbolo numeral
-                dir_limpia = re.sub(r'\b(apto|piso|local|bodega|oficina|int|interior)\b.*', '', dir_limpia) # Cortar detalles internos
-                dir_limpia = dir_limpia.strip()
-                
-                # Construir el Query estructurado por parámetros (así la API no falla)
-                query_params = {
-                    "street": dir_limpia,
-                    "city": ciudad_input,
-                    "country": "Colombia",
-                    "format": "json",
-                    "addressdetails": 1
-                }
-                
-                # Codificar la URL de manera segura
-                url_base = "https://nominatim.openstreetmap.org/search?"
-                url_completa = url_base + urllib.parse.urlencode(query_params)
-                
-                # Encabezados de identificación obligatorios para que la API no rechace la app
-                headers = {
-                    "User-Agent": "AlqueriaFinancialBenchmarkingTool/2.0 (student_project_sabana)"
-                }
-                
-                barrio = None
-                hubo_error = False
-                
-                try:
-                    # Petición directa vía HTTP GET
-                    res = requests.get(url_completa, headers=headers, timeout=8)
-                    if res.status_code == 200:
-                        data = res.json()
-                        if data and len(data) > 0:
-                            address_data = data[0].get("address", {})
-                            # Extraer el componente de barrio o sector con mayor prioridad
-                            barrio = address_data.get("suburb") or address_data.get("neighbourhood") or address_data.get("quarter") or address_data.get("commercial")
-                            direccion_oficial = data[0].get("display_name", "")
-                            st.success(f"📍 Ubicación validada: {direccion_oficial.split(', Colombia')[0]}")
-                        else:
-                            hubo_error = True
-                    else:
-                        hubo_error = True
-                except Exception:
-                    hubo_error = True
-                    
-                # ── CONTINGENCIA INTELIGENTE SI LA API ESTÁ SATURADA O NO ENCONTRÓ EL BARRIO ──
-                if hubo_error or not barrio:
-                    # Procesamiento local de rescate por expresiones regulares para no dejar la pantalla en blanco
-                    dir_analisis = direccion_input.lower()
-                    if "jordan" in dir_analisis or "jordán" in dir_analisis:
-                        barrio = "El Jordán"
-                    elif "picaleña" in dir_analisis or "picalena" in dir_analisis:
-                        barrio = "Picaleña"
-                    elif "mirolindo" in dir_analisis:
-                        barrio = "Mirolindo"
-                    elif "boyaca" in dir_analisis or "boyacá" in dir_analisis:
-                        barrio = "Sector Avenida Boyacá"
-                    else:
-                        # Extraer lo que esté después de la primera coma como último recurso
-                        partes = [p.strip() for p in direccion_input.split(",")]
-                        if len(partes) > 1 and partes[1].lower() != ciudad_input.lower():
-                            barrio = partes[1].title()
-                        else:
-                            barrio = "Sector Central Registrado"
-                            
-            # ── DESPLIEGUE VISUAL DE ALTO CONTRASTE NEGRO ──
-            st.markdown("#### 🏘️ Resultado del Análisis de Ubicación")
-            st.markdown("""
-                <style>
-                    div[data-testid="stMetricValue"] { color: #000000 !important; font-weight: 800 !important; }
-                    div[data-testid="stMetricLabel"] p { color: #1A1A1A !important; font-weight: 700 !important; }
-                </style>
-            """, unsafe_allow_html=True)
-            
-            if hubo_error:
-                st.warning("⚠️ La API libre no devolvió datos específicos para esta nomenclatura. Se aplicó normalización de texto local.")
-                st.metric(label="Barrio Asignado (Resolución Local)", value=f"{barrio}")
-            else:
-                st.metric(label="Barrio / Sector Oficial Detectado (API)", value=f"{barrio}")
-                
-            st.caption(f"Zonificación procesada para el control de arriendos en {ciudad_input}.")
-    else:
-        st.warning("No hay direcciones cargadas en el archivo actual de arriendos.")
+    /* CORRECCIÓN DE ICONOS: Líneas blancas pero sin rellenar los cuadrados de fondo */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
+        fill: none !important; 
+        color: #FFFFFF !important;
+        stroke: #FFFFFF !important;
+    }}
+    
+    /* Forzar transparencia en los paths base internos */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg rect,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle {{
+        stroke: #FFFFFF !important;
+        fill: none !important;
+    }}
 
+    /* ── DISEÑO COHESIVO DE PESTAÑAS (STTABS ASILADAS) ── */
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
+        gap: 12px !important;
+        border-bottom: none !important;
+    }}
+    
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {{
+        background-color: transparent !important;
+    }}
+    
+    /* Estilo de pestaña inactiva */
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {{
+        background-color: {GRIS_MED} !important;
+        border: 1px solid {GRIS_MED} !important;
+        border-radius: 6px !important;
+        padding: 8px 16px !important;
+        height: auto !important;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    }}
+    
+    /* Efecto Hover */
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"]:hover {{
+        background-color: #DFDFDF !important;
+        border-color: #DFDFDF !important;
+    }}
+    
+    /* Estilo de pestaña seleccionada activa */
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] {{
+        background-color: {ROJO} !important;
+        border: 1px solid {ROJO} !important;
+    }}
+    
+    /* Textos internos de las pestañas */
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p {{ 
+        color: {NEGRO_TEXT} !important; 
+        font-weight: 700 !important;
+    }}
+    
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
+        color: {BLANCO} !important; 
+        font-weight: 700 !important;
+    }}
+
+    /* ── PIE DE PÁGINA (FOOTER) ── */
+    .footer-final {{
+        text-align: center;
+        padding: 20px;
+        font-size: 13px;
+        color: #666666;
+        border-top: 1px solid {GRIS_MED};
+        margin-top: 50px;
+    }}
+</style>
+"""
 
 
 # ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
