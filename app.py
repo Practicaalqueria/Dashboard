@@ -4,8 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import date
 from io import BytesIO
-import requests
-from geopy.geocoders import Nominatim
+
 
 # ── Configuración de página ────────────────────────────────────────────────────
 st.set_page_config(
