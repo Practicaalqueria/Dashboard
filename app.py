@@ -32,93 +32,23 @@ LOGOTIPO_SIDEBAR = "alqueria_logo.png"
 
 CSS = f"""
 <style>
-    .stApp {{ background-color: {BLANCO} !important; color: {NEGRO_TEXT} !important; }}
-    [data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child {{ background-color: {ROJO} !important; }}
-    [data-testid="stSidebar"] [data-testid="stImage"] {{
-        text-align: center; display: block;
-        margin-left: auto; margin-right: auto;
-        padding-top: 10px; padding-bottom: 15px;
-    }}
-    [data-testid="stSidebar"] [data-testid="stImageActionButton"],
-    [data-testid="stSidebar"] button[title="Expand image"],
-    [data-testid="stSidebar"] [data-testid="stElementToolbar"] {{
-        display: none !important; opacity: 0 !important;
-        visibility: hidden !important; pointer-events: none !important;
-    }}
-    [data-testid="stSidebar"] [data-testid="stImage"] img {{ pointer-events: none !important; }}
-    
-    /* ── FORZAR VISIBILIDAD DE ETIQUETAS (LABELS) EN EL CUERPO ── */
-    .stSelectbox label, .stTextInput label, .stMultiSelect label, .stSlider label, div[data-testid="stWidgetLabel"] p {{
-        color: {NEGRO_TEXT} !important;
-        font-weight: 700 !important;
-        opacity: 1 !important;
+    /* ── CONFIGURACIÓN GLOBAL DE LA APP ── */
+    .stApp {{ 
+        background-color: {BLANCO} !important; 
+        color: {NEGRO_TEXT} !important; 
     }}
     
-    /* ── CORRECCIÓN INMEDIATA: CAJAS DE TEXTO Y SELECCIÓN EN EL CUERPO (LEGBILIDAD TOTAL) ── */
-    div[data-testid="stAppViewContent"] div[data-baseweb="select"] > div,
-    div[data-testid="stAppViewContent"] .stTextInput input {{
-        background-color: {GRIS_CLAR} !important;
-        color: {NEGRO_PURO} !important;
-        border: 1px solid {GRIS_MED} !important;
-    }}
-    /* Asegurar el color del texto escrito dentro de los selectboxes del cuerpo */
-    div[data-testid="stAppViewContent"] div[data-baseweb="select"] [data-testid="stMarkdownContainer"] p {{
-        color: {NEGRO_PURO} !important;
-        font-weight: 500 !important;
-    }}
-    /* Color de las flechitas de selección en el cuerpo */
-    div[data-testid="stAppViewContent"] div[data-baseweb="select"] svg {{ 
-        fill: {NEGRO_PURO} !important; 
-    }}
-
-    /* ── MANTENER CAJAS DEL SIDEBAR COMO ESTABAN (CONTRASTE OSCURO) ── */
-    [data-testid="stSidebar"] .stSelectbox label,
-    [data-testid="stSidebar"] .stMultiSelect label,
-    [data-testid="stSidebar"] .stSlider label,
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] div[data-testid="stWidgetLabel"] p {{
-        color: {BLANCO} !important; font-weight: 700 !important;
-    }}
-    [data-testid="stSidebar"] div[data-baseweb="select"] > div {{
-        background-color: {NEGRO_CAJAS} !important;
-        color: {BLANCO_CAJAS_TEXTO} !important;
-        border: 1px solid {GRIS_MED} !important;
-    }}
-    [data-testid="stSidebar"] div[data-baseweb="select"] [data-testid="stMarkdownContainer"] p {{
-        color: {BLANCO_CAJAS_TEXTO} !important;
-    }}
-    [data-testid="stSidebar"] div[data-baseweb="select"] svg {{ fill: {BLANCO_CAJAS_TEXTO} !important; }}
-    [data-testid="stSidebar"] div[data-baseweb="select"] div[data-testid="stMultiSelectFloatingTags"] span {{
-        background-color: #333333 !important; color: {BLANCO} !important;
-    }}
-    [data-testid="stSidebar"] div[data-testid="stSlider"] div[role="slider"] {{
-        background-color: {NEGRO_PURO} !important;
-        border: 2px solid {BLANCO} !important;
-        box-shadow: 0px 2px 4px rgba(0,0,0,0.4) !important;
-    }}
-    [data-testid="stSidebar"] div[data-testid="stSlider"] div[data-disabled="false"] > div > div > div {{
-        background: {NEGRO_PURO} !important;
-    }}
-    [data-testid="stSidebar"] div[data-testid="stSlider"] span {{
-        color: {BLANCO} !important; font-weight: 700 !important;
+    /* Barra lateral (Sidebar) */
+    [data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child {{ 
+        background-color: {ROJO} !important; 
     }}
     
-    /* ── RECUADROS DE ALERTAS (WARNING/ST.ALERT) ── */
-    div[data-testid="stAlert"] p, div[data-testid="stNotification"] p, .stAlert div {{
-        color: #664d03 !important;
-        font-weight: 600 !important;
+    /* ── MINI BARRA DE HERRAMIENTAS DE DATAFRAME (LIMPIDA Y SIN CUADRADOS) ── */
+    [data-testid="stDataFrame"] {{ 
+        position: relative !important; 
+        margin-top: 42px !important; 
     }}
     
-    /* ── COMPONENTES DE MÉTRICAS (ST.METRIC) ── */
-    div[data-testid="stMetricValue"] div {{
-        color: {NEGRO_PURO} !important; font-weight: 800 !important;
-    }}
-    div[data-testid="stMetricLabel"] p, div[data-testid="stMetricLabel"] label {{
-        color: {NEGRO_TEXT} !important; font-weight: 700 !important;
-    }}
-    
-    /* ── MINI BARRA DE HERRAMIENTAS COMPACTA Y OSCURA ── */
-    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
         top: -44px !important;              
@@ -133,54 +63,60 @@ CSS = f"""
         visibility: visible !important; 
         display: flex !important;
         align-items: center !important;
-        gap: 2px !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-        height: 28px !important;
+        gap: 4px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
+        height: 32px !important;
         width: auto !important;
     }}
+    
+    /* Quitar fondos extraños y opacidades de los botones individuales de la barra */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] {{
-        background-color: transparent !important;
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"],
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] > div {{
         background: transparent !important;
+        background-color: transparent !important;
         border: none !important;
-        border-color: transparent !important;
-        outline: none !important;
         box-shadow: none !important;
-    }}
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] {{
-        min-width: 24px !important;         
-        max-width: 24px !important;
-        width: 24px !important;         
-        height: 24px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
+        width: 26px !important;
+        height: 26px !important;
     }}
+
+    /* SOLUCIÓN RADICAL PARA LOS CUADRADOS: Forzar color en los paths de dibujo pero eliminar rellenos en los contenedores rect */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
-        transform: scale(0.82) !important;
+        color: #FFFFFF !important;
+        fill: transparent !important;
         background: transparent !important;
         background-color: transparent !important;
     }}
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon,
+    
+    /* Evitar que los rectángulos ocultos de las cajas de diseño (bounding boxes) se vuelvan blancos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg rect {{
-        fill: #FFFFFF !important;
-        color: #FFFFFF !important;
+        fill: transparent !important;
+        stroke: transparent !important;
+        background: transparent !important;
+    }}
+    
+    /* Pintar las líneas y flechas internas reales de los iconos en blanco */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path {{
         stroke: #FFFFFF !important;
+        fill: #FFFFFF !important;
     }}
 
-    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES ── */
+    /* ── DISEÑO COHESIVO DE PESTAÑAS (STTABS AISLADAS) ── */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
         gap: 12px !important;
         border-bottom: none !important;
     }}
+    
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {{
         background-color: transparent !important;
     }}
+    
+    /* Estilo de pestaña inactiva */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {{
         background-color: {GRIS_MED} !important;
         border: 1px solid {GRIS_MED} !important;
@@ -190,91 +126,38 @@ CSS = f"""
         transition: all 0.2s ease-in-out !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     }}
+    
+    /* Efecto Hover */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"]:hover {{
         background-color: #DFDFDF !important;
         border-color: #DFDFDF !important;
     }}
+    
+    /* Estilo de pestaña seleccionada activa */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] {{
         background-color: {ROJO} !important;
         border: 1px solid {ROJO} !important;
     }}
+    
+    /* Textos internos de las pestañas */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p {{ 
         color: {NEGRO_TEXT} !important; 
         font-weight: 700 !important;
     }}
+    
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
         color: {BLANCO} !important; 
         font-weight: 700 !important;
     }}
-    
-    /* ── OTROS ELEMENTOS DE INTERFAZ ── */
-    .header-bar-container {{
-        background: {ROJO}; padding: 15px 25px;
-        border-radius: 8px; margin-bottom: 22px;
-    }}
-    .header-text h1 {{ color: {BLANCO} !important; margin: 0; font-size: 1.8rem; font-weight: 700; }}
-    .header-text p  {{ color: {BLANCO} !important; margin: 4px 0 0; font-size: 0.95rem; font-weight: 500; }}
-    .header-kpi-box {{
-        background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-        border-radius: 6px; padding: 10px 18px; text-align: right;
-    }}
-    .header-kpi-value {{ font-size: 2.1rem; font-weight: 800; color: {BLANCO} !important; line-height: 1.1; }}
-    .header-kpi-label {{ font-size: 0.85rem; color: {BLANCO} !important; font-weight: 700;
-        text-transform: uppercase; letter-spacing: .05em; opacity: 0.95; margin-top: 3px; }}
-    .kpi-card {{
-        background: {GRIS_CLAR} !important; border-left: 6px solid {ROJO} !important;
-        border-radius: 6px; padding: 18px 22px; text-align: center;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-    }}
-    .kpi-value {{ font-size: 2.2rem; font-weight: 800; color: {NEGRO_PURO} !important; line-height: 1.1; }}
-    .kpi-label {{ font-size: 0.95rem; color: {NEGRO_TEXT} !important; font-weight: 700;
-        text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }}
-    .stDownloadButton button {{
-        background-color: {BLANCO} !important; color: {NEGRO_PURO} !important;
-        border: 2px solid {ROJO_OSC} !important; border-radius: 6px; font-weight: 700 !important;
-    }}
-    div.stButton > button {{
-        background-color: {ROJO} !important; color: {BLANCO} !important;
-        border: none; border-radius: 6px; font-weight: 700;
-    }}
-    h2, h3, h4 {{ color: {NEGRO_PURO} !important; font-weight: 700 !important; }}
-    [data-testid="stSidebar"] p, [data-testid="stSidebar"] caption {{ color: {BLANCO} !important; }}
-    [data-testid="stSidebar"] .streamlit-expanderHeader {{
-        color: {BLANCO} !important; font-weight: 700 !important;
-        background-color: rgba(255,255,255,0.15) !important;
-        border-radius: 6px !important;
-    }}
-    [data-testid="stSidebar"] .streamlit-expanderHeader svg {{ fill: {BLANCO} !important; }}
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] label {{
-        color: {BLANCO} !important; font-weight: 700 !important;
-    }}
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {{
-        background-color: rgba(255,255,255,0.1) !important;
-        border: 1px dashed rgba(255,255,255,0.5) !important;
-        border-radius: 6px !important;
-    }}
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {{
-        color: {BLANCO} !important;
-    }}
 
-    /* ── PIE DE PÁGINA ── */
+    /* ── PIE DE PÁGINA (FOOTER) ── */
     .footer-final {{
-        position: relative;
-        clear: both;
-        margin-top: 15vh;
-        width: 100%;
-        background-color: #FAFAFA !important;
-        color: #A0A0A0 !important;
         text-align: center;
-        font-size: 0.8rem;
-        font-weight: 500;
-        padding: 12px 0;
-        border-top: 1px solid #F0F0F0;
-    }}
-    div.block-container {{
-        display: flex;
-        flex-direction: column;
-        min-height: 85vh;
+        padding: 20px;
+        font-size: 13px;
+        color: #666666;
+        border-top: 1px solid {GRIS_MED};
+        margin-top: 50px;
     }}
 </style>
 """
