@@ -72,94 +72,48 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME COMPACTA Y ALINEADA ── */
-    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
+    /* ── BARRA DE HERRAMIENTAS OSCURA CON ICONOS 100% BLANCOS ── */
+    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 45px !important; }}
     
-    /* Cápsula contenedora principal: Forzada al ras con el borde derecho del DataFrame */
+    /* Mantiene el contenedor oscuro estilizado al ras de la tabla */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
-        top: -44px !important;              
-        right: 0px !important;             
-        left: auto !important;
-        background-color: #F0F2F6 !important; 
-        border: 1px solid #E6E9EF !important;
-        border-radius: 30px !important;       
-        padding: 2px 6px !important;         
+        top: -38px !important; 
+        right: 5px !important;
+        background-color: #1E2530 !important; 
+        border: 1px solid #2D3748 !important;
+        border-radius: 8px !important; 
+        padding: 4px 8px !important;
         z-index: 99 !important; 
         opacity: 1 !important; 
         visibility: visible !important; 
         display: flex !important;
-        align-items: center !important;
-        gap: 2px !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.06) !important;
-        height: 28px !important;
-        width: auto !important;
+        gap: 6px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.14) !important;
     }}
     
-    /* Eliminar de raíz cualquier burbuja gris de fondo secundaria de Streamlit */
+    /* Forzar fondo transparente para los contenedores internos individuales */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] button,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] div,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div {{
         background-color: transparent !important;
         background: transparent !important;
-        border: none !important;
-        outline: none !important;
-        border-radius: 50% !important;
         box-shadow: none !important;
-        min-width: 24px !important;         
-        max-width: 24px !important;
-        width: 24px !important;         
-        height: 24px !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }}
-    
-    /* Forzar homogeneidad total en los 4 íconos internos */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
-        transform: scale(0.82) !important;
-        fill: #555555 !important;           
-        color: #555555 !important;
-        background: transparent !important;
-        background-color: transparent !important;
+        border: none !important;
     }}
 
-    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (Aislado de Gráficos Plotly) ── */
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
-        gap: 12px !important;
-        border-bottom: none !important;
+    /* FORZAR COLOR BLANCO EN LOS 4 ICONOS (SVG) */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button svg,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] svg {{
+        fill: #FFFFFF !important;           
+        color: #FFFFFF !important;
+        stroke: #FFFFFF !important;
     }}
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {{
-        background-color: transparent !important;
-    }}
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {{
-        background-color: {GRIS_MED} !important;
-        border: 1px solid {GRIS_MED} !important;
-        border-radius: 6px !important;
-        padding: 8px 16px !important;
-        height: auto !important;
-        transition: all 0.2s ease-in-out !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    }}
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"]:hover {{
-        background-color: #DFDFDF !important;
-        border-color: #DFDFDF !important;
-    }}
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] {{
-        background-color: {ROJO} !important;
-        border: 1px solid {ROJO} !important;
-    }}
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p {{ 
-        color: {NEGRO_TEXT} !important; 
-        font-weight: 700 !important;
-    }}
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
-        color: {BLANCO} !important; 
-        font-weight: 700 !important;
-    }}
+    
+    /* ── DISEÑO DE PESTAÑAS ── */
+    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{ color: {NEGRO_TEXT} !important; }}
+    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ color: {ROJO} !important; }}
     
     /* ── OTROS ELEMENTOS DE INTERFAZ ── */
     .header-bar-container {{
