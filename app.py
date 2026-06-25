@@ -72,45 +72,62 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── BARRA DE HERRAMIENTAS OSCURA CON ICONOS 100% BLANCOS ── */
-    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 45px !important; }}
+    /* ── MINI BARRA DE HERRAMIENTAS ORIGINAL COMPACTA Y OSCURA ── */
+    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     
-    /* Mantiene el contenedor oscuro estilizado al ras de la tabla */
+    /* Cápsula contenedora compacta original (idéntica a tus versiones previas impecables) */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
-        top: -38px !important; 
-        right: 5px !important;
-        background-color: #1E2530 !important; 
-        border: 1px solid #2D3748 !important;
-        border-radius: 8px !important; 
-        padding: 4px 8px !important;
+        top: -44px !important;              
+        right: 0px !important;             
+        left: auto !important;
+        background-color: #1e2530 !important; 
+        border: 1px solid #2d3748 !important;
+        border-radius: 30px !important;       
+        padding: 2px 6px !important;         
         z-index: 99 !important; 
         opacity: 1 !important; 
         visibility: visible !important; 
         display: flex !important;
-        gap: 6px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.14) !important;
+        align-items: center !important;
+        gap: 2px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+        height: 28px !important;
+        width: auto !important;
     }}
     
-    /* Forzar fondo transparente para los contenedores internos individuales */
+    /* Limpieza absoluta de fondos internos de los botones para eliminar las cajas grises */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div {{
         background-color: transparent !important;
         background: transparent !important;
-        box-shadow: none !important;
         border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }}
-
-    /* FORZAR COLOR BLANCO EN LOS 4 ICONOS (SVG) */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button svg,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] svg {{
+    
+    /* Mantener el tamaño mini original exacto de los botones individuales */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] {{
+        min-width: 24px !important;         
+        max-width: 24px !important;
+        width: 24px !important;         
+        height: 24px !important;
+    }}
+    
+    /* FORZAR EXCLUSIVAMENTE LOS ÍCONOS A BLANCO SIN AFECTAR EL TAMAÑO */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
+        transform: scale(0.82) !important;
         fill: #FFFFFF !important;           
         color: #FFFFFF !important;
         stroke: #FFFFFF !important;
     }}
-    
+
     /* ── DISEÑO DE PESTAÑAS ── */
     div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{ color: {NEGRO_TEXT} !important; }}
     div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ color: {ROJO} !important; }}
