@@ -222,22 +222,22 @@ CSS = f"""
         color: {BLANCO} !important;
     }}
 
-    /* ── PIE DE PÁGINA RE-UBICADO AL FONDO REAL ── */
+    /* ── PIE DE PÁGINA RE-UBICADO Y MÁS CLARO (SUAVE) ── */
     .footer-final {{
         position: relative;
         clear: both;
-        margin-top: 15vh; /* Crea un colchón de espacio respecto a las gráficas */
+        margin-top: 15vh; /* Mantiene el colchón de espacio */
         width: 100%;
-        background-color: #F8F8F8 !important; /* Fondo gris claro */
-        color: #555555 !important; /* Texto gris oscuro */
+        background-color: #FAFAFA !important; /* Gris casi blanco, muy sutil */
+        color: #A0A0A0 !important; /* Texto gris claro, poco notorio */
         text-align: center;
-        font-size: 0.85rem;
-        font-weight: 600;
-        padding: 15px 0;
-        border-top: 1px solid #ECECEC; /* Línea de separación */
+        font-size: 0.8rem; /* Un poco más pequeño */
+        font-weight: 500;
+        padding: 12px 0;
+        border-top: 1px solid #F0F0F0; /* Línea divisoria extremadamente clara */
     }}
     
-    /* Pequeño ajuste para obligar al layout de Streamlit a empujar el fondo */
+    /* Mantiene el empuje hacia el fondo real de la página */
     div.block-container {{
         display: flex;
         flex-direction: column;
@@ -661,4 +661,4 @@ with tab4:
         )
 
 # ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
-st.markdown('<div class="footer-final">© 2026 Alquería S.A.S. | Dirección Financiera - Herramientas de Optimización y Benchmarking</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer-final">Herramienta desarrollada por Juan Camilo Garzón y Tomás Sandoval en periodo de Micro Prácticas</div>', unsafe_allow_html=True)
