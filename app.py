@@ -46,6 +46,8 @@ CSS = f"""
         visibility: hidden !important; pointer-events: none !important;
     }}
     [data-testid="stSidebar"] [data-testid="stImage"] img {{ pointer-events: none !important; }}
+    
+    /* Forzar visibilidad de etiquetas en el Sidebar (Blanco) */
     [data-testid="stSidebar"] .stSelectbox label,
     [data-testid="stSidebar"] .stMultiSelect label,
     [data-testid="stSidebar"] .stSlider label,
@@ -53,6 +55,27 @@ CSS = f"""
     [data-testid="stSidebar"] div[data-testid="stWidgetLabel"] p {{
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
+    
+    /* ── CORRECCIÓN CRÍTICA: Forzar visibilidad de etiquetas en el CUERPO de la app (Negro) ── */
+    div[data-testid="stAppViewContent"] label,
+    div[data-testid="stAppViewContent"] .stSelectbox label,
+    div[data-testid="stAppViewContent"] div[data-testid="stWidgetLabel"] p {{
+        color: {NEGRO_TEXT} !important; font-weight: 700 !important; opacity: 1 !important;
+    }}
+    
+    /* ── CORRECCIÓN CRÍTICA: Forzar color en componentes de Métricas (St.Metric) ── */
+    div[data-testid="stMetricValue"] div {{
+        color: {NEGRO_PURO} !important; font-weight: 800 !important;
+    }}
+    div[data-testid="stMetricLabel"] p {{
+        color: {NEGRO_TEXT} !important; font-weight: 700 !important;
+    }}
+
+    /* ── CORRECCIÓN CRÍTICA: Texto de los recuadros de Alerta/Warning ── */
+    div[data-testid="stNotification"] p {{
+        color: #7F5F00 !important; font-weight: 600 !important;
+    }}
+    
     [data-testid="stSidebar"] div[data-baseweb="select"] > div {{
         background-color: {NEGRO_CAJAS} !important;
         color: {BLANCO_CAJAS_TEXTO} !important;
@@ -77,10 +100,8 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── MINI BARRA DE HERRAMIENTAS COMPACTA Y OSCURA (RECONSTRUIDA SIN TAPAR ÍCONOS) ── */
+    /* ── MINI BARRA DE HERRAMIENTAS COMPACTA Y OSCURA ── */
     [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
-    
-    /* Cápsula contenedora principal oscura */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
         top: -44px !important;              
@@ -100,8 +121,6 @@ CSS = f"""
         height: 28px !important;
         width: auto !important;
     }}
-    
-    /* Forzar transparencia únicamente en los contenedores de los botones para eliminar los marcos blancos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] {{
@@ -112,8 +131,6 @@ CSS = f"""
         outline: none !important;
         box-shadow: none !important;
     }}
-    
-    /* Asegurar dimensiones de clicks exactas y sin fondos grises en el hover nativo */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] {{
         min-width: 24px !important;         
         max-width: 24px !important;
@@ -125,15 +142,11 @@ CSS = f"""
         padding: 0 !important;
         margin: 0 !important;
     }}
-    
-    /* PINTAR EXCLUSIVAMENTE LAS LÍNEAS DE LOS ICONOS EN BLANCO SIN RELLENAR SU ESPACIO */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
         transform: scale(0.82) !important;
         background: transparent !important;
         background-color: transparent !important;
     }}
-    
-    /* Forzar color blanco puro en trazos y rellenos de los vectores de dibujo */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon,
@@ -143,7 +156,7 @@ CSS = f"""
         stroke: #FFFFFF !important;
     }}
 
-    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (MANTENIDO) ── */
+    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES ── */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
         gap: 12px !important;
         border-bottom: none !important;
@@ -227,28 +240,25 @@ CSS = f"""
         color: {BLANCO} !important;
     }}
 
-    /* ── PIE DE PÁGINA RE-UBICADO Y MÁS CLARO (SUAVE) ── */
+    /* ── PIE DE PÁGINA ── */
     .footer-final {{
         position: relative;
         clear: both;
-        margin-top: 15vh; /* Mantiene el colchón de espacio */
+        margin-top: 15vh;
         width: 100%;
-        background-color: #FAFAFA !important; /* Gris casi blanco, muy sutil */
-        color: #A0A0A0 !important; /* Texto gris claro, poco notorio */
+        background-color: #FAFAFA !important;
+        color: #A0A0A0 !important;
         text-align: center;
-        font-size: 0.8rem; /* Un poco más pequeño */
+        font-size: 0.8rem;
         font-weight: 500;
         padding: 12px 0;
-        border-top: 1px solid #F0F0F0; /* Línea divisoria extremadamente clara */
+        border-top: 1px solid #F0F0F0;
     }}
-    
-    /* Mantiene el empuje hacia el fondo real de la página */
     div.block-container {{
         display: flex;
         flex-direction: column;
         min-height: 85vh;
     }}
-    
 </style>
 """
 
