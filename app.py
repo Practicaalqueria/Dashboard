@@ -54,24 +54,22 @@ CSS = f"""
         opacity: 1 !important;
     }}
     
-    /* ── CORRECCIÓN INMEDIATA: CAJAS DE TEXTO Y SELECCIÓN EN EL CUERPO (LEGBILIDAD TOTAL) ── */
+    /* ── CORRECCIÓN INMEDIATA: CAJAS DE TEXTO Y SELECCIÓN EN EL CUERPO ── */
     div[data-testid="stAppViewContent"] div[data-baseweb="select"] > div,
     div[data-testid="stAppViewContent"] .stTextInput input {{
         background-color: {GRIS_CLAR} !important;
         color: {NEGRO_PURO} !important;
         border: 1px solid {GRIS_MED} !important;
     }}
-    /* Asegurar el color del texto escrito dentro de los selectboxes del cuerpo */
     div[data-testid="stAppViewContent"] div[data-baseweb="select"] [data-testid="stMarkdownContainer"] p {{
         color: {NEGRO_PURO} !important;
         font-weight: 500 !important;
     }}
-    /* Color de las flechitas de selección en el cuerpo */
     div[data-testid="stAppViewContent"] div[data-baseweb="select"] svg {{ 
         fill: {NEGRO_PURO} !important; 
     }}
 
-    /* ── MANTENER CAJAS DEL SIDEBAR COMO ESTABAN (CONTRASTE OSCURO) ── */
+    /* ── MANTENER CAJAS DEL SIDEBAR ── */
     [data-testid="stSidebar"] .stSelectbox label,
     [data-testid="stSidebar"] .stMultiSelect label,
     [data-testid="stSidebar"] .stSlider label,
@@ -88,85 +86,13 @@ CSS = f"""
         color: {BLANCO_CAJAS_TEXTO} !important;
     }}
     [data-testid="stSidebar"] div[data-baseweb="select"] svg {{ fill: {BLANCO_CAJAS_TEXTO} !important; }}
-    [data-testid="stSidebar"] div[data-baseweb="select"] div[data-testid="stMultiSelectFloatingTags"] span {{
-        background-color: #333333 !important; color: {BLANCO} !important;
-    }}
-    [data-testid="stSidebar"] div[data-testid="stSlider"] div[role="slider"] {{
-        background-color: {NEGRO_PURO} !important;
-        border: 2px solid {BLANCO} !important;
-        box-shadow: 0px 2px 4px rgba(0,0,0,0.4) !important;
-    }}
-    [data-testid="stSidebar"] div[data-testid="stSlider"] div[data-disabled="false"] > div > div > div {{
-        background: {NEGRO_PURO} !important;
-    }}
-    [data-testid="stSidebar"] div[data-testid="stSlider"] span {{
-        color: {BLANCO} !important; font-weight: 700 !important;
-    }}
     
-    /* ── RECUADROS DE ALERTAS (WARNING/ST.ALERT) ── */
-    div[data-testid="stAlert"] p, div[data-testid="stNotification"] p, .stAlert div {{
-        color: #664d03 !important;
-        font-weight: 600 !important;
-    }}
-    
-    /* ── COMPONENTES DE MÉTRICAS (ST.METRIC) ── */
-    div[data-testid="stMetricValue"] div {{
-        color: {NEGRO_PURO} !important; font-weight: 800 !important;
-    }}
-    div[data-testid="stMetricLabel"] p, div[data-testid="stMetricLabel"] label {{
-        color: {NEGRO_TEXT} !important; font-weight: 700 !important;
-    }}
-    
-    /* ── MINI BARRA DE HERRAMIENTAS COMPACTA Y OSCURA ── */
-    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
+    /* ── OCULTAR BARRA DE HERRAMIENTAS NATIVA (RECTANGULAR) ── */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
-        position: absolute !important; 
-        top: -44px !important;              
-        right: 0px !important;             
-        left: auto !important;
-        background-color: #1e2530 !important; 
-        border: 1px solid #2d3748 !important;
-        border-radius: 30px !important;       
-        padding: 2px 6px !important;         
-        z-index: 99 !important; 
-        opacity: 1 !important; 
-        visibility: visible !important; 
-        display: flex !important;
-        align-items: center !important;
-        gap: 2px !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-        height: 28px !important;
-        width: auto !important;
-    }}
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] {{
-        background-color: transparent !important;
-        background: transparent !important;
-        border: none !important;
-        border-color: transparent !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }}
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] {{
-        min-width: 24px !important;         
-        max-width: 24px !important;
-        width: 24px !important;         
-        height: 24px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }}
-    /* SOLUCIÓN ÓPTICA: Invertir color para respetar formas y transparencias */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
-        transform: scale(0.82) !important;
-        background: transparent !important;
-        filter: brightness(0) invert(1) !important;
+        display: none !important;
     }}
 
-    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES ── */
+    /* ── DISEÑO DE PESTAÑAS ── */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
         gap: 12px !important;
         border-bottom: none !important;
@@ -180,24 +106,16 @@ CSS = f"""
         border-radius: 6px !important;
         padding: 8px 16px !important;
         height: auto !important;
-        transition: all 0.2s ease-in-out !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    }}
-    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"]:hover {{
-        background-color: #DFDFDF !important;
-        border-color: #DFDFDF !important;
     }}
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] {{
         background-color: {ROJO} !important;
         border: 1px solid {ROJO} !important;
     }}
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p {{ 
-        color: {NEGRO_TEXT} !important; 
-        font-weight: 700 !important;
+        color: {NEGRO_TEXT} !important; font-weight: 700 !important;
     }}
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
-        color: {BLANCO} !important; 
-        font-weight: 700 !important;
+        color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
     /* ── OTROS ELEMENTOS DE INTERFAZ ── */
@@ -205,23 +123,11 @@ CSS = f"""
         background: {ROJO}; padding: 15px 25px;
         border-radius: 8px; margin-bottom: 22px;
     }}
-    .header-text h1 {{ color: {BLANCO} !important; margin: 0; font-size: 1.8rem; font-weight: 700; }}
-    .header-text p  {{ color: {BLANCO} !important; margin: 4px 0 0; font-size: 0.95rem; font-weight: 500; }}
-    .header-kpi-box {{
-        background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-        border-radius: 6px; padding: 10px 18px; text-align: right;
-    }}
-    .header-kpi-value {{ font-size: 2.1rem; font-weight: 800; color: {BLANCO} !important; line-height: 1.1; }}
-    .header-kpi-label {{ font-size: 0.85rem; color: {BLANCO} !important; font-weight: 700;
-        text-transform: uppercase; letter-spacing: .05em; opacity: 0.95; margin-top: 3px; }}
     .kpi-card {{
         background: {GRIS_CLAR} !important; border-left: 6px solid {ROJO} !important;
         border-radius: 6px; padding: 18px 22px; text-align: center;
         box-shadow: 0 1px 4px rgba(0,0,0,0.15);
     }}
-    .kpi-value {{ font-size: 2.2rem; font-weight: 800; color: {NEGRO_PURO} !important; line-height: 1.1; }}
-    .kpi-label {{ font-size: 0.95rem; color: {NEGRO_TEXT} !important; font-weight: 700;
-        text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }}
     .stDownloadButton button {{
         background-color: {BLANCO} !important; color: {NEGRO_PURO} !important;
         border: 2px solid {ROJO_OSC} !important; border-radius: 6px; font-weight: 700 !important;
@@ -230,48 +136,16 @@ CSS = f"""
         background-color: {ROJO} !important; color: {BLANCO} !important;
         border: none; border-radius: 6px; font-weight: 700;
     }}
-    h2, h3, h4 {{ color: {NEGRO_PURO} !important; font-weight: 700 !important; }}
-    [data-testid="stSidebar"] p, [data-testid="stSidebar"] caption {{ color: {BLANCO} !important; }}
-    [data-testid="stSidebar"] .streamlit-expanderHeader {{
-        color: {BLANCO} !important; font-weight: 700 !important;
-        background-color: rgba(255,255,255,0.15) !important;
-        border-radius: 6px !important;
-    }}
-    [data-testid="stSidebar"] .streamlit-expanderHeader svg {{ fill: {BLANCO} !important; }}
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] label {{
-        color: {BLANCO} !important; font-weight: 700 !important;
-    }}
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {{
-        background-color: rgba(255,255,255,0.1) !important;
-        border: 1px dashed rgba(255,255,255,0.5) !important;
-        border-radius: 6px !important;
-    }}
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {{
-        color: {BLANCO} !important;
-    }}
-
+    
     /* ── PIE DE PÁGINA ── */
     .footer-final {{
-        position: relative;
-        clear: both;
-        margin-top: 15vh;
-        width: 100%;
-        background-color: #FAFAFA !important;
-        color: #A0A0A0 !important;
-        text-align: center;
-        font-size: 0.8rem;
-        font-weight: 500;
-        padding: 12px 0;
-        border-top: 1px solid #F0F0F0;
-    }}
-    div.block-container {{
-        display: flex;
-        flex-direction: column;
-        min-height: 85vh;
+        position: relative; clear: both; margin-top: 15vh;
+        width: 100%; background-color: #FAFAFA !important;
+        color: #A0A0A0 !important; text-align: center;
+        font-size: 0.8rem; padding: 12px 0; border-top: 1px solid #F0F0F0;
     }}
 </style>
 """
-
 
 
 st.markdown(CSS, unsafe_allow_html=True)
