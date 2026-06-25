@@ -30,7 +30,6 @@ NEGRO_CAJAS = "#000000"
 BLANCO_CAJAS_TEXTO = "#FFFFFF"
 LOGOTIPO_SIDEBAR = "alqueria_logo.png"
 
-
 CSS = f"""
 <style>
     .stApp {{ background-color: {BLANCO} !important; color: {NEGRO_TEXT} !important; }}
@@ -160,16 +159,11 @@ CSS = f"""
         padding: 0 !important;
         margin: 0 !important;
     }}
+    /* SOLUCIÓN ÓPTICA: Invertir color para respetar formas y transparencias */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
         transform: scale(0.82) !important;
         background: transparent !important;
-        background-color: transparent !important;
-    }}
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon {{
-        fill: #FFFFFF !important;
-        color: #FFFFFF !important;
+        filter: brightness(0) invert(1) !important;
     }}
 
     /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES ── */
