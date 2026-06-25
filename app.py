@@ -5,6 +5,10 @@ import plotly.graph_objects as go
 from datetime import date
 from io import BytesIO
 
+# ─── AÑADE ESTAS DOS LÍNEAS AQUÍ ARRIBA ────────────────────────────────────────
+import requests
+from geopy.geocoders import Nominatim
+# ───────────────────────────────────────────────────────────────────────────────
 
 # ── Configuración de página ────────────────────────────────────────────────────
 st.set_page_config(
