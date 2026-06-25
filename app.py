@@ -72,45 +72,54 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME (Estilo Imagen 2) ── */
-    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 45px !important; }}
+    /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME (Pequeña y Alejada de la Tabla) ── */
+    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     
-    /* Contenedor principal flotante */
+    /* Contenedor principal estilo cápsula pequeña */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
-        top: -42px !important; 
-        right: 5px !important;
-        background-color: #F0F2F6 !important; /* Gris claro estandar y limpio */
+        top: -46px !important;              /* Subido para evitar que pise el borde negro de la tabla */
+        right: 2px !important;
+        background-color: #F0F2F6 !important; /* Fondo gris claro limpio */
         border: 1px solid #E6E9EF !important;
-        border-radius: 30px !important;       /* Redondeado completo como capsula */
-        padding: 4px 12px !important;
+        border-radius: 30px !important;       /* Bordes perfectamente redondos estilo cápsula */
+        padding: 2px 8px !important;         /* Compactado al mínimo */
         z-index: 99 !important; 
         opacity: 1 !important; 
         visibility: visible !important; 
         display: flex !important;
-        gap: 4px !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+        align-items: center !important;
+        gap: 2px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.06) !important;
+        height: auto !important;
+        width: auto !important;
     }}
     
-    /* Forzar que los sub-contenedores o botones internos no hereden formas cuadradas o fondos oscuros */
+    /* Forzar botones internos circulares, ultra compactos e independientes */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button {{
         background-color: transparent !important;
         border: none !important;
         border-radius: 50% !important;
         box-shadow: none !important;
-        min-width: auto !important;
-        padding: 4px !important;
+        min-width: 24px !important;         /* Dimensiones fijas pequeñas */
+        max-width: 24px !important;
+        height: 24px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }}
     
-    /* Color de los iconos internos de la tabla */
+    /* Reducción sutil de los iconos internos para un look estético */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
-        fill: #555555 !important;
+        transform: scale(0.82) !important;
+        fill: #555555 !important;           /* Gris oscuro suave */
         color: #555555 !important;
     }}
 
-    /* ── DISEÑO DE PESTAÑAS EXCLUSIVAMENTE COMO BOTONES (Soluciona Imagen 1) ── */
-    /* Usamos selectores especificos de estructura para no romper graficas de Plotly u otros componentes */
+    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (Aislado de Gráficos Plotly) ── */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
         gap: 12px !important;
         border-bottom: none !important;
@@ -118,7 +127,7 @@ CSS = f"""
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {{
         background-color: transparent !important;
     }}
-    /* Modifica UNICAMENTE los botones controladores de las pestañas principales */
+    /* Afecta únicamente los elementos de control de las pestañas superiores principales */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {{
         background-color: {GRIS_MED} !important;
         border: 1px solid {GRIS_MED} !important;
