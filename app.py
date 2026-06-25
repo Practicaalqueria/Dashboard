@@ -661,4 +661,4 @@ with tab4:
         )
 
 # ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
-st.markdown('<div class="footer-final">Herramienta desarrollada por Juan Camilo Garzón y Tomás Sandoval en periodo de Micro Prácticas</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer-final">Herramienta desarrollada por Juan Camilo Garzón y Tomás Sandoval, estudiantes de la Universidad de La Sabana en periodo de Micro Prácticas</div>', unsafe_allow_html=True)
