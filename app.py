@@ -221,6 +221,29 @@ CSS = f"""
     [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {{
         color: {BLANCO} !important;
     }}
+
+    /* ── PIE DE PÁGINA RE-UBICADO AL FONDO REAL ── */
+    .footer-final {{
+        position: relative;
+        clear: both;
+        margin-top: 15vh; /* Crea un colchón de espacio respecto a las gráficas */
+        width: 100%;
+        background-color: #F8F8F8 !important; /* Fondo gris claro */
+        color: #555555 !important; /* Texto gris oscuro */
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 15px 0;
+        border-top: 1px solid #ECECEC; /* Línea de separación */
+    }}
+    
+    /* Pequeño ajuste para obligar al layout de Streamlit a empujar el fondo */
+    div.block-container {{
+        display: flex;
+        flex-direction: column;
+        min-height: 85vh;
+    }}
+    
 </style>
 """
 
@@ -636,3 +659,6 @@ with tab4:
             file_name="arriendos_filtrado.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
+# ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
+st.markdown('<div class="footer-final">© 2026 Alquería S.A.S. | Dirección Financiera - Herramientas de Optimización y Benchmarking</div>', unsafe_allow_html=True)
