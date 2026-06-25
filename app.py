@@ -47,7 +47,19 @@ CSS = f"""
     }}
     [data-testid="stSidebar"] [data-testid="stImage"] img {{ pointer-events: none !important; }}
     
-    /* Forzar visibilidad de etiquetas en el Sidebar (Blanco) */
+    /* ── FORZAR VISIBILIDAD DE TEXTOS DE ENTRADA (INPUT LABELS) EN EL CUERPO ── */
+    .stSelectbox label, .stTextInput label, .stMultiSelect label, .stSlider label, div[data-testid="stWidgetLabel"] p {{
+        color: {NEGRO_TEXT} !important;
+        font-weight: 700 !important;
+        opacity: 1 !important;
+    }}
+    
+    /* Forzar que las cajas de texto ingresadas muestren texto legible */
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {{
+        color: {NEGRO_PURO} !important;
+    }}
+
+    /* ── FORZAR COLOR EN LAS ETIQUETAS DEL SIDEBAR (MANTENER BLANCAS) ── */
     [data-testid="stSidebar"] .stSelectbox label,
     [data-testid="stSidebar"] .stMultiSelect label,
     [data-testid="stSidebar"] .stSlider label,
@@ -56,24 +68,18 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── CORRECCIÓN CRÍTICA: Forzar visibilidad de etiquetas en el CUERPO de la app (Negro) ── */
-    div[data-testid="stAppViewContent"] label,
-    div[data-testid="stAppViewContent"] .stSelectbox label,
-    div[data-testid="stAppViewContent"] div[data-testid="stWidgetLabel"] p {{
-        color: {NEGRO_TEXT} !important; font-weight: 700 !important; opacity: 1 !important;
+    /* ── CORRECCIÓN CRÍTICA: RECUADROS DE ALERTAS (WARNING/ST.ALERT) ── */
+    div[data-testid="stAlert"] p, div[data-testid="stNotification"] p, .stAlert div {{
+        color: #664d03 !important; /* Marrón/ocre oscuro para alertas amarillas */
+        font-weight: 600 !important;
     }}
     
-    /* ── CORRECCIÓN CRÍTICA: Forzar color en componentes de Métricas (St.Metric) ── */
+    /* ── COMPONENTES DE MÉTRICAS (ST.METRIC) ── */
     div[data-testid="stMetricValue"] div {{
         color: {NEGRO_PURO} !important; font-weight: 800 !important;
     }}
-    div[data-testid="stMetricLabel"] p {{
+    div[data-testid="stMetricLabel"] p, div[data-testid="stMetricLabel"] label {{
         color: {NEGRO_TEXT} !important; font-weight: 700 !important;
-    }}
-
-    /* ── CORRECCIÓN CRÍTICA: Texto de los recuadros de Alerta/Warning ── */
-    div[data-testid="stNotification"] p {{
-        color: #7F5F00 !important; font-weight: 600 !important;
     }}
     
     [data-testid="stSidebar"] div[data-baseweb="select"] > div {{
