@@ -691,7 +691,7 @@ with tab4:
             file_name="arriendos_filtrado.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-# TAB 5 - VERSIÓN CORREGIDA Y BLINDADA CONTRA ERRORES DE RED
+# TAB 5 - VERSIÓN DE RENDIMIENTO CON COORDENADAS Y CONTINGENCIA INTEGRADA
 with tab5:
     st.subheader("📊 Análisis Comparativo de Mercado (Precios por M²)")
     st.markdown("Selecciona un inmueble para geolocalizar su zona y buscar precios de referencia mediante Web Scraping.")
@@ -713,12 +713,14 @@ with tab5:
             ciudad_input = st.text_input("Ciudad/Municipio:", value=ciudad_cruda)
             
         if st.button("🚀 Ejecutar Análisis de Mercado"):
-            barrio = "Zona General"  # Valor por defecto en caso de falla de red
+            barrio = "Zona General"
+            lat_val = None
+            lon_val = None
             hubo_error_geo = False
             
             with st.spinner("1. Localizando coordenadas con Geopy..."):
                 # Se asigna un agente corporativo único y se extiende el timeout a 10 segundos
-                geolocator = Nominatim(user_agent="alqueria_financial_benchmarking_sabana_2026_v2", timeout=10)
+                geolocator = Nominatim(user_agent="alqueria_financial_benchmarking_sabana_2026_v3", timeout=10)
                 query_busqueda = f"{direccion_input}, {ciudad_input}, Colombia"
                 
                 try:
@@ -726,45 +728,65 @@ with tab5:
                     if location and 'address' in location.raw:
                         address_details = location.raw['address']
                         barrio = address_details.get('suburb') or address_details.get('neighbourhood') or address_details.get('quarter') or "Zona General"
+                        lat_val = location.latitude
+                        lon_val = location.longitude
+                        
                         st.success(f"📍 Ubicación encontrada: {location.address}")
-                        st.info(f"🏘️ Zona/Barrio detectado: **{barrio}**")
                     else:
                         hubo_error_geo = True
                 except Exception:
-                    # Si falla el servicio en la nube de Streamlit, se activa la contingencia pasivamente
                     hubo_error_geo = True
             
-            # Si el servicio falló, avisamos con un warning sutil pero permitimos que el modelo corra
-            if hubo_error_geo:
-                st.warning("⚠️ El servicio de mapas de OpenStreetMap está saturado o no respondió. Se calculará una estimación basada en la ciudad introducida.")
-                barrio = "Zona de Contingencia"
+            # ── MANEJO VISUAL DE COORDENADAS (REALES O ESTIMADAS) ──
+            st.markdown("#### 🌐 Coordenadas Geográficas de Análisis")
+            coord1, coord2 = st.columns(2)
             
-            with st.spinner(f"2. Extrayendo precios de referencia en {barrio}..."):
+            if not hubo_error_geo and lat_val and lon_val:
+                with coord1:
+                    st.metric(label="Compass Latitud (Real)", value=f"{lat_val:.6f}")
+                with coord2:
+                    st.metric(label="Map Longitud (Real)", value=f"{lon_val:.6f}")
+                st.info(f"🏘️ Zona/Barrio detectado por mapa: **{barrio}**")
+            else:
+                # Si falla el servicio, se estiman coordenadas relativas de contingencia para no bloquear la app
+                st.warning("⚠️ El servicio de OpenStreetMap no respondió a tiempo. Se calculará una estimación utilizando coordenadas base regionales.")
+                barrio = "Zona de Contingencia"
+                
+                # Coordenadas base simuladas según el input para que visualmente se mantenga la estructura
+                if "ibague" in ciudad_input.lower():
+                    lat_val, lon_val = 4.438889, -75.232222
+                else:
+                    lat_val, lon_val = 4.609710, -74.081750  # Bogotá base
+                    
+                with coord1:
+                    st.metric(label="Compass Latitud (Estimada)", value=f"{lat_val:.6f}")
+                with coord2:
+                    st.metric(label="Map Longitud (Estimada)", value=f"{lon_val:.6f}")
+            
+            # ── PROCESAMIENTO DEL MODELO DE PRECIOS POR M² ──
+            with st.spinner(f"2. Extrayendo precios de referencia..."):
                 url_scraping = f"https://www.propiedades-ejemplo.com/arriendo/{ciudad_input.lower()}/{barrio.lower()}?orden=baratos"
                 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
                 
                 try:
-                    # Intento de conexión simulada al portal de arriendos
                     res = requests.get(url_scraping, headers=headers, timeout=5)
                     if res.status_code == 200:
                         precios_m2_detectados = [45000, 48000, 52000, 39000, 41000]
                     else:
                         raise Exception("Portal no disponible")
                 except Exception:
-                    # Base de datos histórica e inteligente de Alquería según la ciudad
+                    # Lógica inteligente de contingencia según la zona e inputs
                     if "ibague" in ciudad_input.lower():
                         if "jordán" in barrio.lower() or "comuna 5" in barrio.lower():
                             precios_m2_detectados = [22000, 25000, 28000, 24000, 26000]
                         else:
-                            # Estimación promedio por M2 para Ibagué
                             precios_m2_detectados = [19000, 21000, 23000, 20000]
                     elif "bogota" in ciudad_input.lower() or "bogotá" in ciudad_input.lower():
                         precios_m2_detectados = [38000, 42000, 45000, 39000]
                     else:
-                        # Valor base por defecto para otros municipios de operación
                         precios_m2_detectados = [25000, 28000, 30000, 27000]
 
-                # Procesamiento matemático de las métricas de Benchmarking
+                # Despliegue final de resultados de benchmarking financiero
                 promedio_m2 = sum(precios_m2_detectados) / len(precios_m2_detectados)
                 
                 st.markdown("### 📈 Resultados del Benchmarking (Modelado de Datos)")
@@ -777,7 +799,6 @@ with tab5:
                 st.caption("Consulta de optimización financiera procesada correctamente.")
     else:
         st.warning("No hay direcciones cargadas en el archivo actual de arriendos.")
-
 
 # ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
 st.markdown('<div class="footer-final">Herramienta desarrollada por Juan Camilo Garzón y Tomás Sandoval, estudiantes de la Universidad de La Sabana en periodo de Micro Prácticas</div>', unsafe_allow_html=True)
