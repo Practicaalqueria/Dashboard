@@ -75,41 +75,41 @@ CSS = f"""
     /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME COMPACTA Y ALINEADA ── */
     [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     
-    /* Contenedor principal: se fuerza a alinearse con el borde derecho real de la tabla */
+    /* Cápsula contenedora principal: Forzada al ras con el borde derecho del DataFrame */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
         top: -44px !important;              
-        right: 0px !important;             /* Al ras con el borde de los datos, nada sobresale a la derecha */
+        right: 0px !important;             
         left: auto !important;
         background-color: #F0F2F6 !important; 
         border: 1px solid #E6E9EF !important;
         border-radius: 30px !important;       
-        padding: 2px 8px !important;         
+        padding: 2px 6px !important;         
         z-index: 99 !important; 
         opacity: 1 !important; 
         visibility: visible !important; 
         display: flex !important;
         align-items: center !important;
-        gap: 3px !important;
+        gap: 2px !important;
         box-shadow: 0 2px 5px rgba(0,0,0,0.06) !important;
         height: 28px !important;
         width: auto !important;
     }}
     
-    /* Eliminar fondos residuales tipo 'burbuja' en sub-elementos internos de Streamlit */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[data-testid="stElementToolbarButton"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] span {{
+    /* Eliminar de raíz cualquier burbuja gris de fondo secundaria de Streamlit */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] button,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] div,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button {{
         background-color: transparent !important;
         background: transparent !important;
         border: none !important;
         outline: none !important;
-        border-radius: 0px !important;
+        border-radius: 50% !important;
         box-shadow: none !important;
-        min-width: auto !important;
-        max-width: auto !important;
-        width: 24px !important;         /* Todos los elementos con el mismo ancho exacto */
+        min-width: 24px !important;         
+        max-width: 24px !important;
+        width: 24px !important;         
         height: 24px !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -118,7 +118,7 @@ CSS = f"""
         justify-content: center !important;
     }}
     
-    /* Homogeneizar comportamiento y aspecto de los 4 iconos */
+    /* Forzar homogeneidad total en los 4 íconos internos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
         transform: scale(0.82) !important;
         fill: #555555 !important;           
