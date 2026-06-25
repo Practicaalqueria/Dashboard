@@ -75,7 +75,7 @@ CSS = f"""
     /* ── MINI BARRA DE HERRAMIENTAS ORIGINAL COMPACTA Y OSCURA ── */
     [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     
-    /* Cápsula contenedora compacta original (idéntica a tus versiones previas impecables) */
+    /* Cápsula contenedora compacta */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
         top: -44px !important;              
@@ -96,41 +96,73 @@ CSS = f"""
         width: auto !important;
     }}
     
-    /* Limpieza absoluta de fondos internos de los botones para eliminar las cajas grises */
+    /* ANULACIÓN RADICAL DE LAS CAJAS BLANCAS/GRISES INTERNAS */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] *,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] span {{
         background-color: transparent !important;
         background: transparent !important;
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
     }}
     
-    /* Mantener el tamaño mini original exacto de los botones individuales */
+    /* Configuración de tamaño de los contenedores de botón internos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] {{
         min-width: 24px !important;         
         max-width: 24px !important;
         width: 24px !important;         
         height: 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }}
     
-    /* FORZAR EXCLUSIVAMENTE LOS ÍCONOS A BLANCO SIN AFECTAR EL TAMAÑO */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
+    /* Forzar los 4 iconos estrictamente a blanco puro */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg * {{
         transform: scale(0.82) !important;
         fill: #FFFFFF !important;           
         color: #FFFFFF !important;
         stroke: #FFFFFF !important;
     }}
 
-    /* ── DISEÑO DE PESTAÑAS ── */
-    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{ color: {NEGRO_TEXT} !important; }}
-    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ color: {ROJO} !important; }}
+    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (Restaurado) ── */
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
+        gap: 12px !important;
+        border-bottom: none !important;
+    }}
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {{
+        background-color: transparent !important;
+    }}
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {{
+        background-color: {GRIS_MED} !important;
+        border: 1px solid {GRIS_MED} !important;
+        border-radius: 6px !important;
+        padding: 8px 16px !important;
+        height: auto !important;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    }}
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"]:hover {{
+        background-color: #DFDFDF !important;
+        border-color: #DFDFDF !important;
+    }}
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] {{
+        background-color: {ROJO} !important;
+        border: 1px solid {ROJO} !important;
+    }}
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p {{ 
+        color: {NEGRO_TEXT} !important; 
+        font-weight: 700 !important;
+    }}
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
+        color: {BLANCO} !important; 
+        font-weight: 700 !important;
+    }}
     
     /* ── OTROS ELEMENTOS DE INTERFAZ ── */
     .header-bar-container {{
