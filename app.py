@@ -71,12 +71,18 @@ CSS = f"""
     [data-testid="stSidebar"] div[data-testid="stSlider"] span {{
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
+    
+    /* MODIFICADO: Barra de herramientas limpia sin forma de botón */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; top: -38px !important; right: 5px !important;
-        background-color: {GRIS_CLAR} !important; border: 1px solid {GRIS_MED} !important;
-        border-radius: 4px !important; padding: 2px 6px !important;
+        background-color: transparent !important; border: none !important;
+        box-shadow: none !important; padding: 0 !important;
         z-index: 99 !important; opacity: 1 !important; visibility: visible !important; display: flex !important;
     }}
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button {{
+        background-color: transparent !important; border: none !important;
+    }}
+    
     [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 45px !important; }}
     .header-bar-container {{
         background: {ROJO}; padding: 15px 25px;
@@ -107,43 +113,8 @@ CSS = f"""
         background-color: {ROJO} !important; color: {BLANCO} !important;
         border: none; border-radius: 6px; font-weight: 700;
     }}
-    /* Tabs con estilo de botón */
-    div[data-testid="stTabs"] {{
-        gap: 8px !important;
-    }}
-    div[data-testid="stTabs"] button {{
-        background-color: {GRIS_MED} !important;
-        border: 2px solid {GRIS_MED} !important;
-        border-radius: 8px !important;
-        padding: 8px 18px !important;
-        font-weight: 700 !important;
-        transition: all 0.2s ease !important;
-    }}
-    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{
-        color: {NEGRO_TEXT} !important;
-        font-weight: 700 !important;
-    }}
-    div[data-testid="stTabs"] button[aria-selected="true"] {{
-        background-color: {ROJO} !important;
-        border: 2px solid {ROJO} !important;
-        border-radius: 8px !important;
-    }}
-    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{
-        color: {BLANCO} !important;
-        font-weight: 700 !important;
-    }}
-    div[data-testid="stTabs"] button:hover {{
-        background-color: {ROJO_OSC} !important;
-        border-color: {ROJO_OSC} !important;
-    }}
-    div[data-testid="stTabs"] button:hover [data-testid="stMarkdownContainer"] p {{
-        color: {BLANCO} !important;
-    }}
-    /* Ocultar la línea inferior de tabs por defecto */
-    div[data-testid="stTabs"] > div:first-child {{
-        border-bottom: none !important;
-        gap: 8px !important;
-    }}
+    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{ color: {NEGRO_TEXT} !important; }}
+    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ color: {ROJO} !important; }}
     h2, h3, h4 {{ color: {NEGRO_PURO} !important; font-weight: 700 !important; }}
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] caption {{ color: {BLANCO} !important; }}
     [data-testid="stSidebar"] .streamlit-expanderHeader {{
@@ -165,6 +136,7 @@ CSS = f"""
     }}
 </style>
 """
+
 st.markdown(CSS, unsafe_allow_html=True)
 
 
