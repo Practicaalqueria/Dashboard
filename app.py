@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import date
-import os
+from io import BytesIO
 
 # ── Configuración de página ────────────────────────────────────────────────────
 st.set_page_config(
@@ -23,7 +23,6 @@ NEGRO_PURO = "#000000"
 NEGRO_TEXT = "#1A1A1A"
 NEGRO_CAJAS = "#000000"
 BLANCO_CAJAS_TEXTO = "#FFFFFF"
-
 LOGOTIPO_SIDEBAR = "alqueria_logo.png"
 
 CSS = f"""
@@ -112,8 +111,6 @@ CSS = f"""
     div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ color: {ROJO} !important; }}
     h2, h3, h4 {{ color: {NEGRO_PURO} !important; font-weight: 700 !important; }}
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] caption {{ color: {BLANCO} !important; }}
-
-    /* Estilos para el expander de gestión de archivo */
     [data-testid="stSidebar"] .streamlit-expanderHeader {{
         color: {BLANCO} !important; font-weight: 700 !important;
         background-color: rgba(255,255,255,0.15) !important;
@@ -139,41 +136,24 @@ st.markdown(CSS, unsafe_allow_html=True)
 # ── CARGA DE DATOS ─────────────────────────────────────────────────────────────
 @st.cache_data(show_spinner="Cargando datos...")
 def cargar_datos(file_bytes):
-    from io import BytesIO
     df = pd.read_excel(BytesIO(file_bytes), sheet_name="RELACION CONTRATOS", header=1)
     df.columns = df.columns.astype(str).str.strip()
     df = df.dropna(how="all")
 
-    if "PRECIO" in df.columns:
-        if pd.api.types.is_numeric_dtype(df["PRECIO"]):
-            df["PRECIO NUM"] = pd.to_numeric(df["PRECIO"], errors="coerce").fillna(0).astype(float)
-        else:
-            p = df["PRECIO"].astype(str).str.strip()
-            for ch in ["$", " "]: p = p.str.replace(ch, "", regex=False)
-            p = p.str.replace(".", "", regex=False).str.replace(",", ".", regex=False)
-            df["PRECIO NUM"] = pd.to_numeric(p, errors="coerce").fillna(0).astype(float)
-    else:
-        df["PRECIO NUM"] = 0.0
+    def limpiar_precio(col):
+        if pd.api.types.is_numeric_dtype(col):
+            return pd.to_numeric(col, errors="coerce").fillna(0).astype(float)
+        p = col.astype(str).str.strip()
+        for ch in ["$", " "]:
+            p = p.str.replace(ch, "", regex=False)
+        p = p.str.replace(".", "", regex=False).str.replace(",", ".", regex=False)
+        return pd.to_numeric(p, errors="coerce").fillna(0).astype(float)
 
-    if "PRECIO REAL" in df.columns:
-        if pd.api.types.is_numeric_dtype(df["PRECIO REAL"]):
-            df["PRECIO REAL NUM"] = pd.to_numeric(df["PRECIO REAL"], errors="coerce").fillna(0).astype(float)
+    for col, destino in [("PRECIO", "PRECIO NUM"), ("PRECIO REAL", "PRECIO REAL NUM"), ("PRECIO NEGOCIADOR", "PRECIO NEGOCIADOR")]:
+        if col in df.columns:
+            df[destino] = limpiar_precio(df[col])
         else:
-            p = df["PRECIO REAL"].astype(str).str.strip()
-            for ch in ["$", " "]: p = p.str.replace(ch, "", regex=False)
-            p = p.str.replace(".", "", regex=False).str.replace(",", ".", regex=False)
-            df["PRECIO REAL NUM"] = pd.to_numeric(p, errors="coerce").fillna(0).astype(float)
-    else:
-        df["PRECIO REAL NUM"] = 0.0
-
-    if "PRECIO NEGOCIADOR" in df.columns:
-        if pd.api.types.is_numeric_dtype(df["PRECIO NEGOCIADOR"]):
-            df["PRECIO NEGOCIADOR"] = pd.to_numeric(df["PRECIO NEGOCIADOR"], errors="coerce").fillna(0).astype(float)
-        else:
-            p = df["PRECIO NEGOCIADOR"].astype(str).str.strip()
-            for ch in ["$", " "]: p = p.str.replace(ch, "", regex=False)
-            p = p.str.replace(".", "", regex=False).str.replace(",", ".", regex=False)
-            df["PRECIO NEGOCIADOR"] = pd.to_numeric(p, errors="coerce").fillna(0).astype(float)
+            df[destino] = 0.0
 
     for col_fecha in ["INICIO CONTRATO", "FIN CONTRATO"]:
         if col_fecha in df.columns:
@@ -183,9 +163,10 @@ def cargar_datos(file_bytes):
     return df
 
 
-# ── FUNCIONES DE SEMÁFORO ──────────────────────────────────────────────────────
+# ── SEMÁFORO ───────────────────────────────────────────────────────────────────
 def semaforo(fecha_fin):
-    if pd.isna(fecha_fin): return "⚪ Sin fecha"
+    if pd.isna(fecha_fin):
+        return "⚪ Sin fecha"
     try:
         delta = (fecha_fin.date() - date.today()).days
         if delta < 0:      return "🔴 Vencido"
@@ -196,16 +177,23 @@ def semaforo(fecha_fin):
         return "⚪ Sin fecha"
 
 def dias_restantes(fecha_fin):
-    if pd.isna(fecha_fin): return None
-    try: return (fecha_fin.date() - date.today()).days
-    except: return None
+    if pd.isna(fecha_fin):
+        return None
+    try:
+        return (fecha_fin.date() - date.today()).days
+    except:
+        return None
 
-def mapear_columna_contrato(valor):
-    if pd.isna(valor): return "No especifica"
+def mapear_contrato(valor):
+    if pd.isna(valor):
+        return "No especifica"
     txt = str(valor).strip().lower()
-    if txt in ["", "none", "nan", "null", "n/a"]: return "No especifica"
-    elif txt in ["si", "sí"]: return "Sí"
-    elif "no" in txt: return "No"
+    if txt in ["", "none", "nan", "null", "n/a"]:
+        return "No especifica"
+    elif txt in ["si", "sí"]:
+        return "Sí"
+    elif "no" in txt:
+        return "No"
     return "No especifica"
 
 
@@ -215,33 +203,44 @@ try:
 except:
     st.sidebar.caption("⚠️ [Configura la ruta del Logo en LOGOTIPO_SIDEBAR]")
 
-# -- Gestión de archivo (expander) --
-with st.sidebar.expander("📂 Gestión de archivo", expanded=False):
-    st.markdown(f"<span style='color:white;font-weight:700;'>Archivo cargado:</span>", unsafe_allow_html=True)
+# -- Gestión de archivos (expander) --
+with st.sidebar.expander("📂 Gestión de archivos", expanded=False):
+    st.markdown("<span style='color:white;font-weight:700;'>Archivos cargados:</span>", unsafe_allow_html=True)
 
-    if st.session_state.get("archivo_bytes") is not None:
-        st.success(f"✅ {st.session_state.get('archivo_nombre', 'archivo.xlsx')}")
-        if st.button("🗑️ Eliminar archivo", use_container_width=True):
-            st.session_state["archivo_bytes"] = None
-            st.session_state["archivo_nombre"] = None
-            cargar_datos.clear()
-            st.rerun()
+    if st.session_state.get("archivos_dict"):
+        for nombre in list(st.session_state["archivos_dict"].keys()):
+            col_n, col_x = st.columns([4, 1])
+            with col_n:
+                st.markdown(f"<span style='color:white;font-size:0.85rem;'>✅ {nombre}</span>", unsafe_allow_html=True)
+            with col_x:
+                if st.button("🗑️", key="del_" + nombre, help="Eliminar " + nombre):
+                    del st.session_state["archivos_dict"][nombre]
+                    cargar_datos.clear()
+                    st.rerun()
     else:
-        st.warning("⚠️ No hay archivo cargado")
+        st.warning("⚠️ No hay archivos cargados")
 
-    archivo_subido = st.file_uploader(
-        "Subir archivo Excel",
+    if "uploader_key" not in st.session_state:
+        st.session_state["uploader_key"] = 0
+
+    archivos_subidos = st.file_uploader(
+        "Subir archivos Excel",
         type=["xlsx"],
-        label_visibility="visible"
+        accept_multiple_files=True,
+        label_visibility="visible",
+        key="uploader_" + str(st.session_state["uploader_key"])
     )
-    if archivo_subido is not None:
-        st.session_state["archivo_bytes"] = archivo_subido.read()
-        st.session_state["archivo_nombre"] = archivo_subido.name
+    if archivos_subidos:
+        if "archivos_dict" not in st.session_state:
+            st.session_state["archivos_dict"] = {}
+        for archivo in archivos_subidos:
+            st.session_state["archivos_dict"][archivo.name] = archivo.read()
+        st.session_state["uploader_key"] += 1
         cargar_datos.clear()
         st.rerun()
 
-# -- Verificar que hay archivo --
-if st.session_state.get("archivo_bytes") is None:
+# -- Verificar que hay archivos --
+if not st.session_state.get("archivos_dict"):
     st.markdown(f"""
     <div class="header-bar-container">
         <div class="header-text">
@@ -250,42 +249,45 @@ if st.session_state.get("archivo_bytes") is None:
         </div>
     </div>
     """, unsafe_allow_html=True)
-    st.info("👈 Para comenzar, abre el panel **'📂 Gestión de archivo'** en el sidebar y sube el Excel.")
+    st.info("👈 Para comenzar, abre el panel **'📂 Gestión de archivos'** en el sidebar y sube el Excel.")
     st.stop()
 
-# -- Cargar datos --
-df_raw = cargar_datos(st.session_state["archivo_bytes"])
+# -- Cargar y combinar archivos --
+frames = []
+for nombre, file_bytes in st.session_state["archivos_dict"].items():
+    try:
+        frames.append(cargar_datos(bytes(file_bytes)))
+    except Exception as e:
+        st.warning(f"⚠️ No se pudo leer {nombre}: {e}")
 
-if "FIN CONTRATO" in df_raw.columns:
-    df_raw["SEMAFORO"]       = df_raw["FIN CONTRATO"].apply(semaforo)
-    df_raw["DÍAS RESTANTES"] = df_raw["FIN CONTRATO"].apply(dias_restantes)
-elif "FECHA FIN" in df_raw.columns:
-    df_raw["SEMAFORO"]       = df_raw["FECHA FIN"].apply(semaforo)
-    df_raw["DÍAS RESTANTES"] = df_raw["FECHA FIN"].apply(dias_restantes)
+if not frames:
+    st.error("Ningún archivo pudo ser leído.")
+    st.stop()
+
+df_raw = pd.concat(frames, ignore_index=True) if len(frames) > 1 else frames[0]
+
+# -- Semáforo y contrato --
+col_fecha = "FIN CONTRATO" if "FIN CONTRATO" in df_raw.columns else ("FECHA FIN" if "FECHA FIN" in df_raw.columns else None)
+if col_fecha:
+    df_raw["SEMAFORO"]       = df_raw[col_fecha].apply(semaforo)
+    df_raw["DÍAS RESTANTES"] = df_raw[col_fecha].apply(dias_restantes)
 else:
     df_raw["SEMAFORO"]       = "⚪ Sin fecha"
     df_raw["DÍAS RESTANTES"] = None
 
-if "CONTRATO" in df_raw.columns:
-    df_raw["TIENE_CONTRATO_FLG"] = df_raw["CONTRATO"].apply(mapear_columna_contrato)
-else:
-    df_raw["TIENE_CONTRATO_FLG"] = "No especifica"
+df_raw["TIENE_CONTRATO_FLG"] = df_raw["CONTRATO"].apply(mapear_contrato) if "CONTRATO" in df_raw.columns else "No especifica"
 
 # -- Filtros --
 st.sidebar.markdown("## 🔍 Filtros")
 
-lista_ciudades = ["Todas"]
-if "Ciudad" in df_raw.columns:
-    lista_ciudades += sorted([c for c in df_raw["Ciudad"].unique() if c != ""])
+lista_ciudades = ["Todas"] + sorted([c for c in df_raw["Ciudad"].unique() if c != ""]) if "Ciudad" in df_raw.columns else ["Todas"]
 ciudad_sel = st.sidebar.selectbox("Ciudad / Municipio", lista_ciudades)
 
-areas = ["Todas"]
-if "CIA" in df_raw.columns:
-    areas += sorted([a for a in df_raw["CIA"].unique() if a != ""])
+areas = ["Todas"] + sorted([a for a in df_raw["CIA"].unique() if a != ""]) if "CIA" in df_raw.columns else ["Todas"]
 area_sel = st.sidebar.selectbox("Compañía (CIA)", areas)
 
 p_min = 0
-p_max = int(df_raw["PRECIO NEGOCIADOR"].max()) if "PRECIO NEGOCIADOR" in df_raw.columns else 150000000
+p_max = int(df_raw["PRECIO NEGOCIADOR"].max()) if "PRECIO NEGOCIADOR" in df_raw.columns and df_raw["PRECIO NEGOCIADOR"].max() > 0 else 150000000
 valores_escala = list(range(p_min, p_max + 500000, 500000))
 if p_max not in valores_escala:
     valores_escala.append(p_max)
@@ -297,9 +299,12 @@ rango_precio_fmt = st.sidebar.select_slider(
     format_func=lambda v: f"${v:,}".replace(",", ".")
 )
 
-estado_sel   = st.sidebar.multiselect("Clasificación por vigencia",
-    ["🔴 Vencido","🟡 Próximo (≤60 días)","🟠 Atención (≤180 días)","🟢 Vigente","⚪ Sin fecha"], default=[])
-contrato_sel = st.sidebar.selectbox("¿Tiene contrato?", ["Todos","Sí","No","No especifica"])
+estado_sel = st.sidebar.multiselect(
+    "Clasificación por vigencia",
+    ["🔴 Vencido", "🟡 Próximo (≤60 días)", "🟠 Atención (≤180 días)", "🟢 Vigente", "⚪ Sin fecha"],
+    default=[]
+)
+contrato_sel = st.sidebar.selectbox("¿Tiene contrato?", ["Todos", "Sí", "No", "No especifica"])
 
 st.sidebar.markdown("---")
 st.sidebar.caption("Dashboard v1.0 | Gestión Inmobiliaria")
@@ -324,7 +329,7 @@ vencidos         = (df_principales["SEMAFORO"] == "🔴 Vencido").sum()
 proximos         = (df_principales["SEMAFORO"] == "🟡 Próximo (≤60 días)").sum()
 vigentes         = (df_principales["SEMAFORO"] == "🟢 Vigente").sum()
 costo_real_total = df_principales["PRECIO REAL NUM"].sum()
-str_costo_real   = "${:,.0f}".format(costo_real_total).replace(",","X").replace(".",",").replace("X",".")
+str_costo_real   = "${:,.0f}".format(costo_real_total).replace(",", "X").replace(".", ",").replace("X", ".")
 
 # ── ENCABEZADO ─────────────────────────────────────────────────────────────────
 st.markdown(f"""
@@ -373,10 +378,10 @@ tab1, tab2, tab3, tab4 = st.tabs([
 with tab1:
     st.subheader(f"Contratos filtrados ({len(df)})")
     cols_mostrar = [c for c in [
-        "ARTICULO","CIA","Ciudad","Direccion completa","Area asume Gasto",
-        "Administrador contrato","Centro Costo","DESCRIPCIÓN",
-        "Nombre de PROVEEDOR","PRECIO","PRECIO REAL","NEGOCIADOR","CONTRATO",
-        "FECHA INICIO","FECHA FIN","DÍAS RESTANTES","SEMAFORO","DURACION","AJUSTE","Vigencia"
+        "ARTICULO", "CIA", "Ciudad", "Direccion completa", "Area asume Gasto",
+        "Administrador contrato", "Centro Costo", "DESCRIPCIÓN",
+        "Nombre de PROVEEDOR", "PRECIO", "PRECIO REAL", "NEGOCIADOR", "CONTRATO",
+        "FECHA INICIO", "FECHA FIN", "DÍAS RESTANTES", "SEMAFORO", "DURACION", "AJUSTE", "Vigencia"
     ] if c in df.columns]
     if len(df) > 0:
         st.dataframe(
@@ -403,7 +408,7 @@ with tab2:
         }
         df_pie_data["Estado_Grafica"] = df_pie_data["SEMAFORO"].map(mapa_nombres)
         conteo_semaforo = df_pie_data["Estado_Grafica"].value_counts().reset_index()
-        conteo_semaforo.columns = ["Estado","Cantidad"]
+        conteo_semaforo.columns = ["Estado", "Cantidad"]
         color_map = {
             "Vencido": "#C8102E", "Próximo (≤60 días)": "#F59E0B",
             "Atención (≤180 días)": "#F97316", "Vigente": "#16A34A", "Sin Fecha": "#9CA3AF",
@@ -412,14 +417,14 @@ with tab2:
                          color="Estado", color_discrete_map=color_map, hole=0.55)
         fig_pie.update_traces(
             textposition="outside", textinfo="label+percent",
-            domain=dict(x=[0.1,0.9], y=[0.1,0.9]),
+            domain=dict(x=[0.1, 0.9], y=[0.1, 0.9]),
             textfont=dict(size=13, color="#000000", family="Arial, sans-serif", weight="bold"),
             hovertemplate="<b>%{label}</b><br>Cantidad: %{value}<br>Porcentaje: %{percent}<extra></extra>"
         )
         fig_pie.update_layout(showlegend=False, paper_bgcolor="rgba(0,0,0,0)",
-                              plot_bgcolor="rgba(0,0,0,0)", margin=dict(t=25,b=25,l=25,r=25), height=400)
+                              plot_bgcolor="rgba(0,0,0,0)", margin=dict(t=25, b=25, l=25, r=25), height=400)
 
-        c1, c2 = st.columns([1.4,1.6])
+        c1, c2 = st.columns([1.4, 1.6])
         estado_dinamico = None
         with c1:
             st.markdown("### 📊 Distribución por Estado")
@@ -447,9 +452,9 @@ with tab2:
                 df_tabla_vigencia = df_principales[df_principales["SEMAFORO"] == estado_dinamico]
             else:
                 st.markdown("### 📋 Vista General: Contratos Críticos (≤60 días)")
-                df_tabla_vigencia = df_principales[df_principales["SEMAFORO"].isin(["🔴 Vencido","🟡 Próximo (≤60 días)"])]
+                df_tabla_vigencia = df_principales[df_principales["SEMAFORO"].isin(["🔴 Vencido", "🟡 Próximo (≤60 días)"])]
 
-            cols_crit = [c for c in ["ARTICULO","CIA","Ciudad","Nombre de PROVEEDOR","PRECIO","PRECIO REAL","FECHA FIN","DÍAS RESTANTES","SEMAFORO"] if c in df_principales.columns]
+            cols_crit = [c for c in ["ARTICULO", "CIA", "Ciudad", "Nombre de PROVEEDOR", "PRECIO", "PRECIO REAL", "FECHA FIN", "DÍAS RESTANTES", "SEMAFORO"] if c in df_principales.columns]
             if len(df_tabla_vigencia) > 0:
                 st.dataframe(
                     df_tabla_vigencia[cols_crit].sort_values("DÍAS RESTANTES") if "DÍAS RESTANTES" in cols_crit else df_tabla_vigencia[cols_crit],
@@ -479,12 +484,12 @@ with tab3:
                 max_cia = costo_cia["PRECIO_MILLONES"].max() if not costo_cia.empty else 100
                 fig_cia = px.bar(costo_cia, y="CIA", x="PRECIO_MILLONES", orientation="h",
                     color_discrete_sequence=[COLOR_ROJO_ALQUERIA],
-                    text=costo_cia["PRECIO_MILLONES"].apply(lambda v: "${:,.1f}M".format(v).replace(",","X").replace(".",",").replace("X",".")))
+                    text=costo_cia["PRECIO_MILLONES"].apply(lambda v: "${:,.1f}M".format(v).replace(",", "X").replace(".", ",").replace("X", ".")))
                 fig_cia.update_traces(textposition="outside", cliponaxis=False,
                     textfont=dict(color=COLOR_TEXTO, size=12, weight="bold"))
                 fig_cia.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                    margin=dict(t=10,b=30,l=80,r=40), font=dict(color=COLOR_TEXTO, size=12),
-                    xaxis=dict(title="Costo (Millones COP)", range=[0, max_cia*1.2],
+                    margin=dict(t=10, b=30, l=80, r=40), font=dict(color=COLOR_TEXTO, size=12),
+                    xaxis=dict(title="Costo (Millones COP)", range=[0, max_cia * 1.2],
                         title_font=dict(color=COLOR_TEXTO, size=12, weight="bold"),
                         tickfont=dict(color=COLOR_TEXTO), gridcolor=COLOR_GRID),
                     yaxis=dict(title="Compañía", title_font=dict(color=COLOR_TEXTO, size=12, weight="bold"),
@@ -500,16 +505,16 @@ with tab3:
                 total_barras = len(costo_area)
                 fig_area = px.bar(costo_area, y="Area asume Gasto", x="PRECIO_MILLONES", orientation="h",
                     color_discrete_sequence=[COLOR_ROJO_ALQUERIA],
-                    text=costo_area["PRECIO_MILLONES"].apply(lambda v: "${:,.1f}M".format(v).replace(",","X").replace(".",",").replace("X",".")))
+                    text=costo_area["PRECIO_MILLONES"].apply(lambda v: "${:,.1f}M".format(v).replace(",", "X").replace(".", ",").replace("X", ".")))
                 fig_area.update_traces(textposition="outside", cliponaxis=False,
                     textfont=dict(color=COLOR_TEXTO, size=12, weight="bold"))
                 fig_area.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                    margin=dict(t=10,b=30,l=150,r=40), font=dict(color=COLOR_TEXTO, size=12),
-                    xaxis=dict(title="Costo (Millones COP)", range=[0, costo_area["PRECIO_MILLONES"].max()*1.2],
+                    margin=dict(t=10, b=30, l=150, r=40), font=dict(color=COLOR_TEXTO, size=12),
+                    xaxis=dict(title="Costo (Millones COP)", range=[0, costo_area["PRECIO_MILLONES"].max() * 1.2],
                         title_font=dict(color=COLOR_TEXTO, size=12, weight="bold"),
                         tickfont=dict(color=COLOR_TEXTO), gridcolor=COLOR_GRID),
                     yaxis=dict(type="category", title="Área",
-                        range=[max(0, total_barras-9), total_barras],
+                        range=[max(0, total_barras - 9), total_barras],
                         title_font=dict(color=COLOR_TEXTO, size=12, weight="bold"),
                         tickfont=dict(color=COLOR_TEXTO)), height=420)
                 st.plotly_chart(fig_area, use_container_width=True)
@@ -524,7 +529,6 @@ with tab4:
 
         @st.cache_data
         def to_excel(dataframe):
-            from io import BytesIO
             with pd.ExcelWriter(buf := BytesIO(), engine="openpyxl") as writer:
                 dataframe.to_excel(writer, index=False, sheet_name="Arriendos")
             return buf.getvalue()
