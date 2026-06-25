@@ -72,10 +72,10 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── MINI BARRA DE HERRAMIENTAS ORIGINAL COMPACTA Y OSCURA (LIMPIEZA TOTAL) ── */
+    /* ── MINI BARRA DE HERRAMIENTAS COMPACTA Y OSCURA (RECONSTRUIDA SIN TAPAR ÍCONOS) ── */
     [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     
-    /* Cápsula contenedora principal */
+    /* Cápsula contenedora principal oscura */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
         top: -44px !important;              
@@ -96,32 +96,19 @@ CSS = f"""
         width: auto !important;
     }}
     
-    /* Forzar transparencia absoluta en los botones internos y eliminar bordes fantasmas */
+    /* Forzar transparencia únicamente en los contenedores de los botones para eliminar los marcos blancos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] span {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] {{
         background-color: transparent !important;
         background: transparent !important;
         border: none !important;
         border-color: transparent !important;
         outline: none !important;
         box-shadow: none !important;
-        -webkit-box-shadow: none !important;
     }}
     
-    /* Eliminar cualquier efecto de recuadro al pasar el mouse u oprimir */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:hover,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:focus,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:active,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"]:hover {{
-        background: transparent !important;
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }}
-    
-    /* Mantener las dimensiones exactas y compactas de los botones */
+    /* Asegurar dimensiones de clicks exactas y sin fondos grises en el hover nativo */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] {{
         min-width: 24px !important;         
         max-width: 24px !important;
@@ -134,15 +121,21 @@ CSS = f"""
         margin: 0 !important;
     }}
     
-    /* Forzar los 4 iconos estrictamente a blanco puro sin heredar fondos */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg * {{
+    /* PINTAR EXCLUSIVAMENTE LAS LÍNEAS DE LOS ICONOS EN BLANCO SIN RELLENAR SU ESPACIO */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
         transform: scale(0.82) !important;
-        fill: #FFFFFF !important;           
+        background: transparent !important;
+        background-color: transparent !important;
+    }}
+    
+    /* Forzar color blanco puro en trazos y rellenos de los vectores de dibujo */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg rect {{
+        fill: #FFFFFF !important;
         color: #FFFFFF !important;
         stroke: #FFFFFF !important;
-        background-color: transparent !important;
-        background: transparent !important;
     }}
 
     /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (MANTENIDO) ── */
