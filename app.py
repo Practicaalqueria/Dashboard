@@ -30,6 +30,7 @@ NEGRO_CAJAS = "#000000"
 BLANCO_CAJAS_TEXTO = "#FFFFFF"
 LOGOTIPO_SIDEBAR = "alqueria_logo.png"
 
+
 CSS = f"""
 <style>
     .stApp {{ background-color: {BLANCO} !important; color: {NEGRO_TEXT} !important; }}
@@ -166,11 +167,9 @@ CSS = f"""
     }}
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg rect {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon {{
         fill: #FFFFFF !important;
         color: #FFFFFF !important;
-        stroke: #FFFFFF !important;
     }}
 
     /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES ── */
@@ -278,6 +277,8 @@ CSS = f"""
     }}
 </style>
 """
+
+
 
 st.markdown(CSS, unsafe_allow_html=True)
 
