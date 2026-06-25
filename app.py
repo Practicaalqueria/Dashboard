@@ -692,11 +692,14 @@ with tab4:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-# TAB 5 - MÓDULO EXCLUSIVO DE IDENTIFICACIÓN DE ZONA GEOFRENCIADA
+# TAB 5 - MÓDULO DE ZONIFICACIÓN CON EXTRACTOR INTELIGENTE POR FALLA DE SERVIDOR
 with tab5:
     st.subheader("📍 Identificación Geográfica de Zonas")
-    st.markdown("Selecciona un inmueble para geolocalizar y validar oficialmente su barrio o sector según los mapas de OpenStreetMap.")
+    st.markdown("Selecciona un inmueble para geolocalizar y validar oficialmente su barrio o sector.")
     
+    from geopy.geocoders import Nominatim
+    import re
+
     if len(df_principales) > 0 and "Direccion completa" in df_principales.columns:
         # Selector dinámico basado en los inmuebles filtrados con conversión explícita a string
         opciones_inmuebles = df_principales["ARTICULO"].astype(str) + " - " + df_principales["Direccion completa"].astype(str)
@@ -714,40 +717,72 @@ with tab5:
             ciudad_input = st.text_input("Ciudad/Municipio:", value=ciudad_cruda)
             
         if st.button("🚀 Identificar Zona"):
-            barrio = "Zona General"
+            barrio = None
             hubo_error_geo = False
             
-            with st.spinner("Buscando sector en el servidor de mapas..."):
-                # Asignación de agente único y timeout de seguridad de 10 segundos
-                geolocator = Nominatim(user_agent="alqueria_financial_zone_identifier_2026", timeout=10)
+            with st.spinner("Intentando conectar con el servidor de mapas (OpenStreetMap)..."):
+                # Agente exclusivo y timeout extendido a 12 segundos para mitigar caídas de red
+                geolocator = Nominatim(user_agent="alqueria_financial_zone_identifier_2026_v5", timeout=12)
                 query_busqueda = f"{direccion_input}, {ciudad_input}, Colombia"
                 
                 try:
                     location = geolocator.geocode(query_busqueda, addressdetails=True)
                     if location and 'address' in location.raw:
                         address_details = location.raw['address']
-                        # Extraer el componente de barrio/comuna más específico disponible
-                        barrio = address_details.get('suburb') or address_details.get('neighbourhood') or address_details.get('quarter') or "Zona General"
-                        st.success(f"📍 Dirección normalizada: {location.address}")
+                        barrio = address_details.get('suburb') or address_details.get('neighbourhood') or address_details.get('quarter')
+                        if barrio:
+                            st.success(f"📍 Servidor en línea. Dirección normalizada: {location.address}")
                     else:
                         hubo_error_geo = True
                 except Exception:
                     hubo_error_geo = True
             
-            # ── DESPLIEGUE EXCLUSIVO DE RESULTADOS DE ZONIFICACIÓN ──
+            # ── LÓGICA DE CONTINGENCIA LOCAL SI EL SERVIDOR DE MAPAS NO FUNCIONA ──
+            if hubo_error_geo or not barrio:
+                # Si el servidor no responde, usamos lógica de texto para rescatar el sector de la dirección cruda
+                direccion_analisis = direccion_input.lower()
+                
+                # Diccionario de palabras clave comunes en tus direcciones para identificar sectores/barrios habitualmente usados
+                # Puedes expandir este mapeo según las zonas frecuentes de tu base de datos
+                if "jordán" in direccion_analisis or "jordan" in direccion_analisis:
+                    barrio = "Barrio El Jordán"
+                elif "parque industrial" in direccion_analisis:
+                    barrio = "Parque Industrial"
+                elif "boyaca" in direccion_analisis or "boyacá" in direccion_analisis:
+                    # Intenta extraer si hay un indicador de calle/avenida cercana o sector común de la Boyacá
+                    barrio = "Avenida Boyacá (Zona de Influencia)"
+                elif "centro" in direccion_analisis:
+                    barrio = "Zona Centro"
+                else:
+                    # Intento secundario: si hay texto después de una coma, asumimos que puede ser el sector
+                    partes = [p.strip() for p in direccion_input.split(",")]
+                    if len(partes) > 1 and partes[1].lower() != ciudad_input.lower():
+                        barrio = partes[1]
+                    else:
+                        barrio = "Sector General"
+
+            # ── DESPLIEGUE EXCLUSIVO DE RESULTADOS CON ALTO CONTRASTE VISUAL ──
             st.markdown("#### 🏘️ Resultado del Análisis de Ubicación")
             
-            if not hubo_error_geo and barrio != "Zona General":
-                st.metric(label="Zona / Barrio Oficial Detectado", value=f"{barrio}")
-                st.caption(f"Validación territorial completada con éxito para {ciudad_input}.")
+            # Forzado explícito de estilos CSS para que el texto sea visible (Alto contraste Negro/Blanco)
+            st.markdown("""
+                <style>
+                    div[data-testid="stMetricValue"] { color: #000000 !important; font-weight: 800 !important; }
+                    div[data-testid="stMetricLabel"] p { color: #1A1A1A !important; font-weight: 700 !important; }
+                </style>
+            """, unsafe_allow_html=True)
+
+            if hubo_error_geo:
+                st.warning(f"⚠️ El servidor de mapas externo de OpenStreetMap no respondió. Se activó el extractor de contingencia local de texto para {ciudad_input}.")
+                st.metric(label="Zona Asignada por Contingencia Local", value=f"{barrio}")
             else:
-                # Caso de contingencia si el mapa está saturado o no encuentra el barrio exacto
-                st.warning("⚠️ El servidor de mapas no pudo mapear el barrio específico en este momento o la dirección requiere mayor detalle.")
-                st.metric(label="Zona Asignada (Contingencia)", value=f"{ciudad_input} - Sector General")
-                st.caption("Se tomó la ciudad/municipio base como sector de referencia para el contrato.")
+                st.metric(label="Zona / Barrio Oficial Detectado (Mapa)", value=f"{barrio}")
+                
+            st.caption(f"Procesamiento territorial completado para el municipio de {ciudad_input}.")
                 
     else:
         st.warning("No hay direcciones cargadas en el archivo actual de arriendos.")
+
 
 
 # ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
