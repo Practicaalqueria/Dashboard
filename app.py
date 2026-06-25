@@ -692,12 +692,11 @@ with tab4:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-# TAB 5 - MÓDULO DE ZONIFICACIÓN CON EXTRACTOR INTELIGENTE POR FALLA DE SERVIDOR
+# TAB 5 - MÓDULO DE ZONIFICACIÓN AUTÓNOMO (100% LOCAL SIN DEPENDENCIAS DE SERVIDORES)
 with tab5:
     st.subheader("📍 Identificación Geográfica de Zonas")
-    st.markdown("Selecciona un inmueble para geolocalizar y validar oficialmente su barrio o sector.")
+    st.markdown("Selecciona un inmueble para clasificar y validar internamente su zona o sector de cobertura.")
     
-    from geopy.geocoders import Nominatim
     import re
 
     if len(df_principales) > 0 and "Direccion completa" in df_principales.columns:
@@ -717,54 +716,64 @@ with tab5:
             ciudad_input = st.text_input("Ciudad/Municipio:", value=ciudad_cruda)
             
         if st.button("🚀 Identificar Zona"):
-            barrio = None
-            hubo_error_geo = False
-            
-            with st.spinner("Intentando conectar con el servidor de mapas (OpenStreetMap)..."):
-                # Agente exclusivo y timeout extendido a 12 segundos para mitigar caídas de red
-                geolocator = Nominatim(user_agent="alqueria_financial_zone_identifier_2026_v5", timeout=12)
-                query_busqueda = f"{direccion_input}, {ciudad_input}, Colombia"
-                
-                try:
-                    location = geolocator.geocode(query_busqueda, addressdetails=True)
-                    if location and 'address' in location.raw:
-                        address_details = location.raw['address']
-                        barrio = address_details.get('suburb') or address_details.get('neighbourhood') or address_details.get('quarter')
-                        if barrio:
-                            st.success(f"📍 Servidor en línea. Dirección normalizada: {location.address}")
-                    else:
-                        hubo_error_geo = True
-                except Exception:
-                    hubo_error_geo = True
-            
-            # ── LÓGICA DE CONTINGENCIA LOCAL SI EL SERVIDOR DE MAPAS NO FUNCIONA ──
-            if hubo_error_geo or not barrio:
-                # Si el servidor no responde, usamos lógica de texto para rescatar el sector de la dirección cruda
+            # Todo el procesamiento ocurre de forma local e instantánea
+            with st.spinner("Procesando normalización de nomenclatura urbana..."):
                 direccion_analisis = direccion_input.lower()
+                ciudad_analisis = ciudad_input.lower()
+                barrio_detectado = None
                 
-                # Diccionario de palabras clave comunes en tus direcciones para identificar sectores/barrios habitualmente usados
-                # Puedes expandir este mapeo según las zonas frecuentes de tu base de datos
-                if "jordán" in direccion_analisis or "jordan" in direccion_analisis:
-                    barrio = "Barrio El Jordán"
-                elif "parque industrial" in direccion_analisis:
-                    barrio = "Parque Industrial"
-                elif "boyaca" in direccion_analisis or "boyacá" in direccion_analisis:
-                    # Intenta extraer si hay un indicador de calle/avenida cercana o sector común de la Boyacá
-                    barrio = "Avenida Boyacá (Zona de Influencia)"
-                elif "centro" in direccion_analisis:
-                    barrio = "Zona Centro"
-                else:
-                    # Intento secundario: si hay texto después de una coma, asumimos que puede ser el sector
-                    partes = [p.strip() for p in direccion_input.split(",")]
-                    if len(partes) > 1 and partes[1].lower() != ciudad_input.lower():
-                        barrio = partes[1]
-                    else:
-                        barrio = "Sector General"
+                # ── MOTOR DE REGLAS 1: FILTRADO POR CIUDAD ESPECÍFICA ──
+                if "ibague" in ciudad_analisis or "ibagué" in ciudad_analisis:
+                    if "jordán" in direccion_analisis or "jordan" in direccion_analisis:
+                        barrio_detectado = "Zona Comercial Jordán"
+                    elif "picaleña" in direccion_analisis or "picalena" in direccion_analisis:
+                        barrio_detectado = "Sector Industrial Picaleña"
+                    elif "mirolindo" in direccion_analisis:
+                        barrio_detectado = "Zona Industrial Mirolindo"
+                    elif "centro" in direccion_analisis:
+                        barrio_detectado = "Centro Histórico / Comercial"
+                        
+                elif "bogota" in ciudad_analisis or "bogotá" in ciudad_analisis:
+                    if "boyaca" in direccion_analisis or "boyacá" in direccion_analisis:
+                        barrio_detectado = "Corredor Avenida Boyacá"
+                    elif "suba" in direccion_analisis:
+                        barrio_detectado = "Zona Noroccidente - Suba"
+                    elif "fontibon" in direccion_analisis or "fontibón" in direccion_analisis:
+                        barrio_detectado = "Zona Industrial Fontibón"
+                    elif "usaquen" in direccion_analisis or "usaquén" in direccion_analisis:
+                        barrio_detectado = "Zona Norte - Usaquén"
+                    elif "calle 80" in direccion_analisis or "clle 80" in direccion_analisis or "cl 80" in direccion_analisis:
+                        barrio_detectado = "Eje Logístico Calle 80"
 
-            # ── DESPLIEGUE EXCLUSIVO DE RESULTADOS CON ALTO CONTRASTE VISUAL ──
+                elif "bucaramanga" in ciudad_analisis:
+                    if "parque industrial" in direccion_analisis or "chimitá" in direccion_analisis or "chimita" in direccion_analisis:
+                        barrio_detectado = "Parque Industrial Chimitá"
+                    elif "centro" in direccion_analisis:
+                        barrio_detectado = "Zona Centro"
+                
+                # ── MOTOR DE REGLAS 2: ANALIZADOR DE TEXTO GENÉRICO (SINOPSIS URBANA) ──
+                if not barrio_detectado:
+                    # Intento A: Buscar patrones de "Barrio X" o "Sector X"
+                    match_barrio = re.search(r'(?:barrio|sector|urbanización|urb|conjunto)\s+([a-zA-Z0-9áéíóúñÁÉÍÓÚÑ\s]+)', direccion_analisis)
+                    if match_barrio:
+                        barrio_detectado = match_barrio.group(1).split(",")[0].strip().title()
+                    else:
+                        # Intento B: Si la dirección viene separada por comas (ej: "Avenida Boyaca #152B - 62, El Tintal")
+                        partes = [p.strip() for p in direccion_input.split(",")]
+                        if len(partes) > 1 and partes[1].lower() != ciudad_analisis:
+                            barrio_detectado = partes[1].title()
+                        else:
+                            # Intento C: Extraer la primera avenida o calle principal como eje de zona
+                            eje_vial = re.search(r'(av\s+[a-zA-Záéíóúñ]+|avenida\s+[a-zA-Záéíóúñ]+|diagonal\s+\d+|transversal\s+\d+)', direccion_analisis)
+                            if eje_vial:
+                                barrio_detectado = f"Zona de Influencia {eje_vial.group(1).title()}"
+                            else:
+                                barrio_detectado = "Sector Comercial General"
+
+            # ── DESPLIEGUE VISUAL DE ALTO CONTRASTE ──
             st.markdown("#### 🏘️ Resultado del Análisis de Ubicación")
             
-            # Forzado explícito de estilos CSS para que el texto sea visible (Alto contraste Negro/Blanco)
+            # Asegurar visibilidad en modo claro/oscuro forzando el color negro
             st.markdown("""
                 <style>
                     div[data-testid="stMetricValue"] { color: #000000 !important; font-weight: 800 !important; }
@@ -772,17 +781,12 @@ with tab5:
                 </style>
             """, unsafe_allow_html=True)
 
-            if hubo_error_geo:
-                st.warning(f"⚠️ El servidor de mapas externo de OpenStreetMap no respondió. Se activó el extractor de contingencia local de texto para {ciudad_input}.")
-                st.metric(label="Zona Asignada por Contingencia Local", value=f"{barrio}")
-            else:
-                st.metric(label="Zona / Barrio Oficial Detectado (Mapa)", value=f"{barrio}")
-                
-            st.caption(f"Procesamiento territorial completado para el municipio de {ciudad_input}.")
+            st.success("✅ Estructura urbana procesada localmente de forma exitosa (Sin caídas de red).")
+            st.metric(label="Zona / Sector Homologado", value=f"{ciudad_input} - {barrio_detectado}")
+            st.caption(f"Clasificación asignada para la gestión logística del inmueble en {ciudad_input}.")
                 
     else:
         st.warning("No hay direcciones cargadas en el archivo actual de arriendos.")
-
 
 
 # ── PIE DE PÁGINA EN LA PARTE INFERIOR REAL DEL CONTENIDO ──────────────────────
