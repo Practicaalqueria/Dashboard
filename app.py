@@ -96,7 +96,7 @@ CSS = f"""
         width: auto !important;
     }}
     
-    /* ANULACIÓN RADICAL DE LAS CAJAS BLANCAS/GRISES INTERNAS */
+    /* ANULACIÓN RADICAL DE BORDES, CAJAS Y SOMBRAS INTERNAS */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] *,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
@@ -104,11 +104,23 @@ CSS = f"""
         background-color: transparent !important;
         background: transparent !important;
         border: none !important;
+        border-color: transparent !important;
         outline: none !important;
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+    }}
+    
+    /* Forzar a los botones internos a no renderizar estados nativos de enfoque (marcos grises/blancos) */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:focus,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:active,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button:hover {{
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
         box-shadow: none !important;
     }}
     
-    /* Configuración de tamaño de los contenedores de botón internos */
+    /* Configuración de tamaño estricto de los botones para que no se deformen */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"] {{
         min-width: 24px !important;         
         max-width: 24px !important;
@@ -121,16 +133,18 @@ CSS = f"""
         margin: 0 !important;
     }}
     
-    /* Forzar los 4 iconos estrictamente a blanco puro */
+    /* Forzar los 4 iconos estrictamente a blanco puro y transparente de fondo */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg * {{
         transform: scale(0.82) !important;
         fill: #FFFFFF !important;           
         color: #FFFFFF !important;
         stroke: #FFFFFF !important;
+        background: transparent !important;
+        background-color: transparent !important;
     }}
 
-    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (Restaurado) ── */
+    /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES ── */
     div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
         gap: 12px !important;
         border-bottom: none !important;
