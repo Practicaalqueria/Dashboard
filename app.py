@@ -43,7 +43,17 @@ CSS = f"""
         background-color: {ROJO} !important; 
     }}
     
-    /* ── MINI BARRA DE HERRAMIENTAS DE DATAFRAME (LIMPIDA Y SIN CUADRADOS) ── */
+    /* ── PROTECCIÓN ESTRICTA DE LOS KPIS / MÉTRICAS SUPERIORES ── */
+    [data-testid="stMetricValue"] {{ 
+        color: {NEGRO_TEXT} !important; 
+        font-weight: 800 !important; 
+    }}
+    [data-testid="stMetricLabel"] p {{ 
+        color: #555555 !important; 
+        font-weight: 600 !important; 
+    }}
+    
+    /* ── MINI BARRA DE HERRAMIENTAS DE DATAFRAME (LOS 4 ICONOS VISIBLES EN BLANCO) ── */
     [data-testid="stDataFrame"] {{ 
         position: relative !important; 
         margin-top: 42px !important; 
@@ -57,23 +67,22 @@ CSS = f"""
         background-color: #1e2530 !important; 
         border: 1px solid #2d3748 !important;
         border-radius: 30px !important;       
-        padding: 2px 6px !important;         
+        padding: 2px 8px !important;         
         z-index: 99 !important; 
         opacity: 1 !important; 
         visibility: visible !important; 
         display: flex !important;
         align-items: center !important;
-        gap: 4px !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
-        height: 32px !important;
+        gap: 6px !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+        height: 34px !important;
         width: auto !important;
     }}
     
-    /* Quitar fondos extraños y opacidades de los botones individuales de la barra */
+    /* Limpieza de los botones de la barra */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] [data-testid="stElementToolbarButton"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"],
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] > div {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[role="button"] {{
         background: transparent !important;
         background-color: transparent !important;
         border: none !important;
@@ -81,29 +90,37 @@ CSS = f"""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        width: 26px !important;
-        height: 26px !important;
+        width: 28px !important;
+        height: 28px !important;
     }}
 
-    /* SOLUCIÓN RADICAL PARA LOS CUADRADOS: Forzar color en los paths de dibujo pero eliminar rellenos en los contenedores rect */
+    /* Reset de comportamiento para el contenedor del SVG */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
         color: #FFFFFF !important;
-        fill: transparent !important;
         background: transparent !important;
         background-color: transparent !important;
     }}
     
-    /* Evitar que los rectángulos ocultos de las cajas de diseño (bounding boxes) se vuelvan blancos */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg rect {{
-        fill: transparent !important;
-        stroke: transparent !important;
-        background: transparent !important;
+    /* FIX DE LOS 4 ICONOS: Pintar las líneas de TODO tipo de figura geométrica en blanco */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg rect,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg circle,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg polygon {{
+        stroke: #FFFFFF !important;
+        stroke-width: 1.5 !important;
+        fill: none !important;
     }}
     
-    /* Pintar las líneas y flechas internas reales de los iconos en blanco */
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg path {{
-        stroke: #FFFFFF !important;
+    /* Permitir relleno blanco SOLO a las formas que se dibujan rellenas por defecto */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg [fill^="#"],
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg [fill^="rgb"] {{
         fill: #FFFFFF !important;
+    }}
+    
+    /* Evitar explícitamente que los rectángulos invisibles de fondo bloqueen el icono */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button svg > rect:first-child {{
+        fill: transparent !important;
+        stroke: transparent !important;
     }}
 
     /* ── DISEÑO COHESIVO DE PESTAÑAS (STTABS AISLADAS) ── */
@@ -161,6 +178,8 @@ CSS = f"""
     }}
 </style>
 """
+
+
 
 st.markdown(CSS, unsafe_allow_html=True)
 
