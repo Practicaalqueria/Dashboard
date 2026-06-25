@@ -72,38 +72,54 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── BARRA DE HERRAMIENTAS DEL DATAFRAME (Limpia sin forma de botón) ── */
+    /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME (Estilo Imagen 2) ── */
+    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 45px !important; }}
+    
+    /* Contenedor principal flotante */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
-        top: -38px !important; 
+        top: -42px !important; 
         right: 5px !important;
-        background-color: transparent !important; 
-        border: none !important;
-        box-shadow: none !important; 
-        padding: 0 !important;
+        background-color: #F0F2F6 !important; /* Gris claro estandar y limpio */
+        border: 1px solid #E6E9EF !important;
+        border-radius: 30px !important;       /* Redondeado completo como capsula */
+        padding: 4px 12px !important;
         z-index: 99 !important; 
         opacity: 1 !important; 
         visibility: visible !important; 
         display: flex !important;
+        gap: 4px !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
     }}
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button {{
-        background-color: transparent !important; 
-        border: none !important;
-    }}
-    [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 45px !important; }}
     
-    /* ── DISEÑO DE PESTAÑAS COMO BOTONES ── */
-    /* Separación entre cada botón y eliminación de la línea del fondo */
-    div[data-testid="stTabs"] [data-baseweb="tab-list"] {{
+    /* Forzar que los sub-contenedores o botones internos no hereden formas cuadradas o fondos oscuros */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button {{
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 50% !important;
+        box-shadow: none !important;
+        min-width: auto !important;
+        padding: 4px !important;
+    }}
+    
+    /* Color de los iconos internos de la tabla */
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
+        fill: #555555 !important;
+        color: #555555 !important;
+    }}
+
+    /* ── DISEÑO DE PESTAÑAS EXCLUSIVAMENTE COMO BOTONES (Soluciona Imagen 1) ── */
+    /* Usamos selectores especificos de estructura para no romper graficas de Plotly u otros componentes */
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-list"] {{
         gap: 12px !important;
         border-bottom: none !important;
     }}
-    /* Ocultar el indicador de línea inferior nativo */
-    div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {{
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab-highlight"] {{
         background-color: transparent !important;
     }}
-    /* Estilo base para botones inactivos */
-    div[data-testid="stTabs"] button {{
+    /* Modifica UNICAMENTE los botones controladores de las pestañas principales */
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] {{
         background-color: {GRIS_MED} !important;
         border: 1px solid {GRIS_MED} !important;
         border-radius: 6px !important;
@@ -112,23 +128,19 @@ CSS = f"""
         transition: all 0.2s ease-in-out !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     }}
-    /* Hover para los botones */
-    div[data-testid="stTabs"] button:hover {{
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"]:hover {{
         background-color: #DFDFDF !important;
         border-color: #DFDFDF !important;
     }}
-    /* Botón seleccionado / Activo */
-    div[data-testid="stTabs"] button[aria-selected="true"] {{
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] {{
         background-color: {ROJO} !important;
         border: 1px solid {ROJO} !important;
     }}
-    /* Texto de los botones inactivos */
-    div[data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {{ 
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"] [data-testid="stMarkdownContainer"] p {{ 
         color: {NEGRO_TEXT} !important; 
         font-weight: 700 !important;
     }}
-    /* Texto del botón activo (Blanco para contraste) */
-    div[data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
+    div[data-testid="stTabs"] > div:first-child [data-baseweb="tab"][aria-selected="true"] [data-testid="stMarkdownContainer"] p {{ 
         color: {BLANCO} !important; 
         font-weight: 700 !important;
     }}
