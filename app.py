@@ -687,9 +687,16 @@ with tab5:
             
         if st.button("🚀 Ejecutar Análisis de Mercado"):
             with st.spinner("1. Localizando coordenadas con Geopy..."):
-                geolocator = Nominatim(user_agent="alqueria_analytics_2026")
+                # ── CAMBIO: Añadimos un timeout general y un User-Agent único ──
+                geolocator = Nominatim(user_agent="alqueria_financial_benchmarking_sabana_2026", timeout=10)
                 query_busqueda = f"{direccion_input}, {ciudad_input}, Colombia"
-                location = geolocator.geocode(query_busqueda, addressdetails=True)
+                
+                try:
+                    # ── CAMBIO: Añadimos timeout explícito a la consulta ──
+                    location = geolocator.geocode(query_busqueda, addressdetails=True, timeout=10)
+                except Exception as geo_err:
+                    st.error("⚠️ El servicio externo de geolocalización no respondió a tiempo. Por favor, intenta de nuevo en unos segundos.")
+                    location = None
                 
                 if location and 'address' in location.raw:
                     address_details = location.raw['address']
@@ -709,7 +716,6 @@ with tab5:
                             else:
                                 raise Exception("Portal no disponible")
                         except Exception as scraper_err:
-                            # Contingencia inteligente ante errores de conexión o DNS ficticio
                             st.warning("⚠️ No se pudo conectar al portal en tiempo real. Utilizando base de datos histórica de contingencia.")
                             
                             if "ibague" in ciudad_input.lower():
@@ -718,7 +724,6 @@ with tab5:
                                 else:
                                     precios_m2_detectados = [18000, 20000, 22000, 19000]
                             else:
-                                # Estimación base para Bogotá u otras zonas
                                 precios_m2_detectados = [35000, 40000, 42000, 38000]
 
                         # Procesamiento y despliegue de resultados del modelo
@@ -733,7 +738,9 @@ with tab5:
                             
                         st.caption(f"Consulta procesada para la zona mediante identificación geográfica.")
                 else:
-                    st.error("❌ Geopy no pudo identificar componentes válidos de dirección para este registro.")
+                    if 'geo_err' not in locals(): # Si no entró al except anterior pero no devolvió coordenadas válidas
+                        st.error("❌ Geopy no pudo identificar componentes válidos de dirección para este registro.")
+                        
     else:
         st.warning("No hay direcciones cargadas en el archivo actual de arriendos.")
 
