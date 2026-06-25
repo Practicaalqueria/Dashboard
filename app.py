@@ -72,14 +72,15 @@ CSS = f"""
         color: {BLANCO} !important; font-weight: 700 !important;
     }}
     
-    /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME (Alineada y Homogénea) ── */
+    /* ── MINI BARRA DE HERRAMIENTAS DEL DATAFRAME COMPACTA Y ALINEADA ── */
     [data-testid="stDataFrame"] {{ position: relative !important; margin-top: 42px !important; }}
     
-    /* Contenedor principal alineado exactamente al borde derecho de la tabla */
+    /* Contenedor principal: se fuerza a alinearse con el borde derecho real de la tabla */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] {{
         position: absolute !important; 
-        top: -46px !important;              
-        right: 0px !important;             /* Alineado al ras con el límite lateral de los datos */
+        top: -44px !important;              
+        right: 0px !important;             /* Al ras con el borde de los datos, nada sobresale a la derecha */
+        left: auto !important;
         background-color: #F0F2F6 !important; 
         border: 1px solid #E6E9EF !important;
         border-radius: 30px !important;       
@@ -89,24 +90,26 @@ CSS = f"""
         visibility: visible !important; 
         display: flex !important;
         align-items: center !important;
-        gap: 2px !important;
+        gap: 3px !important;
         box-shadow: 0 2px 5px rgba(0,0,0,0.06) !important;
-        height: auto !important;
+        height: 28px !important;
         width: auto !important;
     }}
     
-    /* Quitar burbujas secundarias y homogeneizar todos los botones internos */
+    /* Eliminar fondos residuales tipo 'burbuja' en sub-elementos internos de Streamlit */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div,
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] button,
-    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[data-testid="stElementToolbarButton"] {{
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] div[data-testid="stElementToolbarButton"],
+    [data-testid="stDataFrame"] [data-testid="stElementToolbar"] span {{
         background-color: transparent !important;
         background: transparent !important;
         border: none !important;
         outline: none !important;
-        border-radius: 50% !important;
+        border-radius: 0px !important;
         box-shadow: none !important;
-        min-width: 24px !important;         
-        max-width: 24px !important;
+        min-width: auto !important;
+        max-width: auto !important;
+        width: 24px !important;         /* Todos los elementos con el mismo ancho exacto */
         height: 24px !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -115,11 +118,13 @@ CSS = f"""
         justify-content: center !important;
     }}
     
-    /* Normalizar iconos internos */
+    /* Homogeneizar comportamiento y aspecto de los 4 iconos */
     [data-testid="stDataFrame"] [data-testid="stElementToolbar"] svg {{
         transform: scale(0.82) !important;
         fill: #555555 !important;           
         color: #555555 !important;
+        background: transparent !important;
+        background-color: transparent !important;
     }}
 
     /* ── DISEÑO DE PESTAÑAS COMO BOTONES INDIVIDUALES (Aislado de Gráficos Plotly) ── */
