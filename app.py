@@ -298,10 +298,49 @@ def cargar_datos(file_bytes):
     # Asegurar columnas opcionales que pueden faltar según el formato
     if "ARTICULO" not in df.columns:
         df.insert(0, "ARTICULO", "")
-    if "Ciudad" not in df.columns:
-        df["Ciudad"] = ""
     if "PRECIO NEGOCIADOR" not in df.columns:
         df["PRECIO NEGOCIADOR"] = ""
+
+    # Si no existe Ciudad, extraerla desde la dirección
+    col_dir = next((c for c in df.columns if "irecc" in c.lower()), None)
+    if "Ciudad" not in df.columns:
+        if col_dir:
+            CIUDADES_CO = {
+                "bogota", "bogotá", "medellin", "medellín", "cali", "barranquilla",
+                "bucaramanga", "cartagena", "cucuta", "cúcuta", "pereira", "manizales",
+                "ibague", "ibagué", "armenia", "villavicencio", "pasto", "monteria",
+                "montería", "sincelejo", "valledupar", "santa marta", "neiva", "popayan",
+                "popayán", "tunja", "florencia", "mocoa", "leticia", "yopal", "arauca",
+                "quibdo", "quibdó", "riohacha", "san jose del guaviare", "inírida",
+                "mitú", "puerto carreño", "tenjo", "dosquebradas", "buenaventura",
+                "itagui", "itagüi", "envigado", "bello", "soledad", "soacha",
+                "palmira", "floridablanca", "barrancabermeja",
+            }
+            def extraer_ciudad(direccion):
+                if not isinstance(direccion, str) or direccion.strip() == "":
+                    return ""
+                # Tratar puntos como separadores adicionales
+                texto = direccion.replace(".", ",")
+                partes = [p.strip() for p in texto.replace("\n", ",").split(",")]
+                # Buscar coincidencia con lista de ciudades conocidas
+                for parte in reversed(partes):
+                    limpio = parte.lower().strip()
+                    for ciudad in CIUDADES_CO:
+                        if ciudad in limpio:
+                            # Devolver solo el nombre de la ciudad encontrada (capitalizado)
+                            return ciudad.title()
+                # Si no hay match, tomar el último segmento no vacío
+                for parte in reversed(partes):
+                    if parte.strip():
+                        return parte.strip().title()
+                return ""
+            df["Ciudad"] = df[col_dir].apply(extraer_ciudad)
+        else:
+            df["Ciudad"] = ""
+
+    # Si no existe PRECIO REAL, usar PRECIO como fallback
+    if "PRECIO REAL" not in df.columns and "PRECIO" in df.columns:
+        df["PRECIO REAL"] = df["PRECIO"]
     # ───────────────────────────────────────────────────────────────────────────
 
     def limpiar_precio(col):
