@@ -528,7 +528,9 @@ if contrato_sel != "Todos":
     df = df[df["TIENE_CONTRATO_FLG"] == contrato_sel]
 
 # ── KPIs ───────────────────────────────────────────────────────────────────────
-df_principales   = df[df["ARTICULO"].astype(str).str.strip() != ""]
+df_principales = df[
+    df["CIA"].astype(str).str.strip() != ""
+]
 total_contratos  = len(df_principales)
 vencidos         = (df_principales["SEMAFORO"] == "🔴 Vencido").sum()
 proximos         = (df_principales["SEMAFORO"] == "🟡 Próximo (≤60 días)").sum()
