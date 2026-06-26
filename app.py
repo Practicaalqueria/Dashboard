@@ -284,6 +284,26 @@ def cargar_datos(file_bytes):
     df.columns = df.columns.astype(str).str.strip()
     df = df.dropna(how="all")
 
+    # ── COMPATIBILIDAD CON AMBOS FORMATOS DE EXCEL ─────────────────────────────
+    # Formato 1 (original): tiene fila de título → encabezados en fila 2 (header=1 ok)
+    # Formato 2 (nuevo): sin fila de título → encabezados quedan como primera fila de datos
+    primera_fila = df.iloc[0].astype(str).str.strip().tolist()
+    columnas_conocidas = {"CIA", "ARTICULO", "Ciudad", "PRECIO", "CONTRATO", "NEGOCIADOR"}
+    if len(set(primera_fila) & columnas_conocidas) >= 2:
+        # La primera fila son los encabezados reales → releer con header=2
+        df = pd.read_excel(BytesIO(file_bytes), sheet_name="RELACION CONTRATOS", header=2)
+        df.columns = df.columns.astype(str).str.strip()
+        df = df.dropna(how="all")
+
+    # Asegurar columnas opcionales que pueden faltar según el formato
+    if "ARTICULO" not in df.columns:
+        df.insert(0, "ARTICULO", "")
+    if "Ciudad" not in df.columns:
+        df["Ciudad"] = ""
+    if "PRECIO NEGOCIADOR" not in df.columns:
+        df["PRECIO NEGOCIADOR"] = ""
+    # ───────────────────────────────────────────────────────────────────────────
+
     def limpiar_precio(col):
         if pd.api.types.is_numeric_dtype(col):
             return pd.to_numeric(col, errors="coerce").fillna(0).astype(float)
